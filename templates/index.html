@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visitor Check-In</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h2>Visitor Check-In Form</h2>
+  <form action="/checkin" method="POST">
+    <input type="text" name="name" placeholder="Full Name" required><br>
+    <input type="email" name="email" placeholder="Email" required><br>
+    <input type="text" name="phone" placeholder="Phone"><br>
+    <input type="text" name="employee_to_meet" placeholder="Employee to Meet"><br>
+    <input type="text" name="visit_reason" placeholder="Reason for Visit"><br>
+    <input type="text" name="photo" placeholder="Photo (URL or name)"><br>
+    <button type="submit">Check In</button>
+  </form>
+</body>
+</html>
