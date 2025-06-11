@@ -1,20 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Visitor Check-In</title>
-  <link rel="stylesheet" href="/static/style.css">
+    <title>Visitor Check-In</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <h2>Visitor Check-In Form</h2>
-  <form action="/checkin" method="POST">
-    <input type="text" name="name" placeholder="Full Name" required><br>
-    <input type="email" name="email" placeholder="Email" required><br>
-    <input type="text" name="phone" placeholder="Phone"><br>
-    <input type="text" name="employee_to_meet" placeholder="Employee to Meet"><br>
-    <input type="text" name="visit_reason" placeholder="Reason for Visit"><br>
-    <input type="text" name="photo" placeholder="Photo (URL or name)"><br>
-    <button type="submit">Check In</button>
-  </form>
+    <h2>Visitor Check-In Form</h2>
+    <form action="/checkin" method="POST">
+        <input type="text" name="name" placeholder="Full Name" required><br>
+        <input type="email" name="email" placeholder="Email" required><br>
+        <input type="text" name="phone" placeholder="Phone" required><br>
+        
+        <select name="employee_id" required>
+            <option value="">Select Employee to Meet</option>
+            {% for emp in employees %}
+            <option value="{{ emp.id }}">{{ emp.name }} - {{ emp.designation }}</option>
+            {% endfor %}
+        </select><br>
+        <label for="employee_id">Select Employee:</label>
+        <select name="employee_id" id="employee_id" required>
+             {% for employee in employees %}
+             <option value="{{ employee['id'] }}">{{ employee['name'] }} - {{ employee['designation'] }}</option>
+             {% endfor %}
+            </select>
+
+        <input type="text" name="visit_reason" placeholder="Reason for Visit" required><br>
+        <input type="text" name="photo" placeholder="Photo URL or Path" required><br>
+        <button type="submit">Submit</button>
+    </form>
 </body>
 </html>

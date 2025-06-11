@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+</head>
+<body>
+    <h2>Admin Dashboard</h2>
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Employee to Meet</th>
+            <th>Designation</th>
+            <th>Reason</th>
+            <th>Time</th>
+        </tr>
+        {% for visitor in visitors %}
+        <tr>
+            <td>{{ visitor.name }}</td>
+            <td>{{ visitor.email }}</td>
+            <td>{{ visitor.phone }}</td>
+            <td>{{ visitor.employee_name }}</td>
+            <td>{{ visitor.designation }}</td>
+            <td>{{ visitor.visit_reason }}</td>
+            <td>{{ visitor.timestamp }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
