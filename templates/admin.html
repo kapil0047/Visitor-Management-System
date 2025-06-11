@@ -2,30 +2,58 @@
 <html>
 <head>
     <title>Admin Panel</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #aaa;
+            padding: 8px;
+            text-align: center;
+        }
+        img {
+            max-width: 100px;
+            height: auto;
+        }
+    </style>
 </head>
 <body>
     <h2>Admin Dashboard</h2>
-    <table border="1">
-        <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Employee to Meet</th>
-            <th>Designation</th>
-            <th>Reason</th>
-            <th>Time</th>
-        </tr>
-        {% for visitor in visitors %}
-        <tr>
-            <td>{{ visitor.name }}</td>
-            <td>{{ visitor.email }}</td>
-            <td>{{ visitor.phone }}</td>
-            <td>{{ visitor.employee_name }}</td>
-            <td>{{ visitor.designation }}</td>
-            <td>{{ visitor.visit_reason }}</td>
-            <td>{{ visitor.timestamp }}</td>
-        </tr>
-        {% endfor %}
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Employee</th>
+                <th>Designation</th>
+                <th>Visit Reason</th>
+                <th>Photo</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for visitor in visitors %}
+            <tr>
+                <td>{{ visitor.name }}</td>
+                <td>{{ visitor.email }}</td>
+                <td>{{ visitor.phone }}</td>
+                <td>{{ visitor.employee_name }}</td>
+                <td>{{ visitor.designation }}</td>
+                <td>{{ visitor.visit_reason }}</td>
+                <td>
+                    {% if visitor.photo %}
+                        <img src="{{ url_for('static', filename=visitor.photo) }}" alt="Visitor Photo">
+                    {% else %}
+                        No Photo
+                    {% endif %}
+                </td>
+                <td>{{ visitor.timestamp }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
 </body>
 </html>

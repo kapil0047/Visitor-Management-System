@@ -6,7 +6,8 @@
 </head>
 <body>
     <h2>Visitor Check-In Form</h2>
-    <form action="/checkin" method="POST">
+    <form action="/checkin" method="POST" enctype="multipart/form-data">
+>
         <input type="text" name="name" placeholder="Full Name" required><br>
         <input type="email" name="email" placeholder="Email" required><br>
         <input type="text" name="phone" placeholder="Phone" required><br>
@@ -25,7 +26,9 @@
             </select>
 
         <input type="text" name="visit_reason" placeholder="Reason for Visit" required><br>
-        <input type="text" name="photo" placeholder="Photo URL or Path" required><br>
+        <label for="photo">Upload Photo:</label>
+        <input type="file" name="photo" accept="image/*" required>
+
         <button type="submit">Submit</button>
     </form>
 </body>
