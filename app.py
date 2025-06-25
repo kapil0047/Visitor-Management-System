@@ -1,20 +1,18 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, url_for
 from werkzeug.utils import secure_filename
 import sqlite3
 import os
 import time
 import smtplib
 from email.message import EmailMessage
+from datetime import datetime
 
 app = Flask(__name__)
-
-# Set upload folder
 UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Email configuration
-SENDER_EMAIL = 'menariaprachi0@gmail.com'        # Replace with sender email
-APP_PASSWORD = 'abgn tmln amyj eqnf'            # Replace with actual app password
+SENDER_EMAIL = 'menariaprachi0@gmail.com'
+APP_PASSWORD = 'abgn tmln amyj eqnf'
 
 def send_email(to_email, visitor_name):
     msg = EmailMessage()
@@ -28,8 +26,11 @@ def send_email(to_email, visitor_name):
         smtp.send_message(msg)
 
 @app.route('/')
-def home():
-    # Fetch employees for dropdown
+def welcome():
+    return render_template('welcome.html')
+
+@app.route('/visitor')
+def visitor_form():
     conn = sqlite3.connect('database/visitors.db')
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
@@ -47,18 +48,20 @@ def checkin():
     visit_reason = request.form['visit_reason']
     photo_file = request.files['photo']
 
-    # Generate unique filename for photo
     filename = secure_filename(photo_file.filename)
     unique_filename = f"{int(time.time())}_{filename}"
     photo_path = os.path.join(UPLOAD_FOLDER, unique_filename)
     photo_file.save(photo_path)
 
-    # Save relative path for HTML access
+    # Save for HTML usage
     photo = os.path.join('uploads', unique_filename).replace("\\", "/")
+    photo_url = url_for('static', filename=photo)
 
-    # Save visitor data to DB
+    checkin_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    # Save to DB
     conn = sqlite3.connect('database/visitors.db')
-    conn.row_factory = sqlite3.Row  # ✅ Set this immediately after connection
+    conn.row_factory = sqlite3.Row
     c = conn.cursor()
     c.execute("""
         INSERT INTO visitors (name, email, phone, employee_id, visit_reason, photo)
@@ -66,7 +69,7 @@ def checkin():
         (name, email, phone, employee_id, visit_reason, photo))
     conn.commit()
 
-    # Fetch employee email for notification
+    # Notify employee
     c.execute("SELECT email FROM employees WHERE id = ?", (employee_id,))
     result = c.fetchone()
     conn.close()
@@ -74,7 +77,7 @@ def checkin():
     if result and result['email']:
         send_email(result['email'], name)
 
-    return render_template("success.html", name=name)
+    return render_template("success.html", name=name, checkin_time=checkin_time, photo_url=photo_url)
 
 @app.route('/admin')
 def admin():
