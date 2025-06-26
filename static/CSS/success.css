@@ -9,55 +9,48 @@ body {
   align-items: center;
 }
 
-/* Outer container to center the card */
 .container {
   width: 100%;
-  max-width: 900px;
+  max-width: 500px;
   padding: 20px;
 }
 
-/* Glass-style card */
 .glass-card {
   background: rgba(20, 40, 80, 0.4);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   border-radius: 20px;
-  padding: 60px 40px;
-  text-align: center;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  padding: 40px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
   color: #e6f0ff;
+  text-align: center;
 }
 
-/* Heading text */
-.glass-card h1 {
-  font-size: 32px;
-  margin-bottom: 10px;
-}
-
-.glass-card h1 span {
-  color: #ffffff;
-  font-weight: 600;
+.glass-card h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #b0eaff;
 }
 
 .glass-card p {
-  font-size: 18px;
-  margin-bottom: 40px;
+  font-size: 16px;
+  margin-bottom: 10px;
   color: #d9ecff;
 }
 
-/* Button styling */
-.buttons .btn {
+.btn {
   background-color: #ffffff;
   color: #002f5d;
-  padding: 12px 24px;
-  margin: 0 10px;
+  padding: 10px 20px;
+  border: none;
   border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
   text-decoration: none;
-  font-weight: 600;
-  transition: 0.3s ease;
+  display: inline-block;
+  margin-top: 20px;
 }
 
-.buttons .btn:hover {
+.btn:hover {
   background-color: #4c94d4;
   color: white;
 }

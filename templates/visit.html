@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visitor Check-In | Pyrotech Visit</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/visit.css') }}">
+</head>
+<body>
+  <div class="container">
+    <div class="glass-card">
+      <h2>Visitor Check-In</h2>
+      <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" name="name" id="name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" name="email" id="email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" name="phone" id="phone" required>
+        </div>
+
+        <div class="form-group">
+          <label for="photo">Upload Photo</label>
+          <input type="file" name="photo" id="photo" required>
+        </div>
+
+        <div class="form-group">
+          <label for="employee">Whom to Visit</label>
+          <select name="employee" id="employee" required>
+            {% for employee in employees %}
+              <option value="{{ employee.id }}">{{ employee.name }} - {{ employee.designation }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <button type="submit" class="btn">Submit Entry</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

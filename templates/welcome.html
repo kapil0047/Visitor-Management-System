@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Welcome | Pyrotech Visit</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/welcome.css') }}">
-
 </head>
 <body>
   <div class="container">
@@ -13,7 +12,7 @@
       <p>Smart & Secure Visitor Management</p>
       <div class="buttons">
         <a href="/visitor" class="btn">Visitor Check-In</a>
-        <a href="/admin" class="btn secondary">Admin Panel</a>
+        <a href="{{ url_for('login') }}" class="btn">Admin Panel</a>
       </div>
     </div>
   </div>

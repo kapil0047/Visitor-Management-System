@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visitor Log | Pyrotech</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+  <div class="admin-container">
+    <h1>Visitor Log</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Visitor</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>Check-in Time</th>
+          <th>Employee Visited</th>
+          <th>Reason</th>
+          <th>Photo</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in visitors %}
+        <tr>
+          <td>{{ v.name }}</td>
+          <td>{{ v.phone }}</td>
+          <td>{{ v.email }}</td>
+          <td>{{ v.checkin_time or 'N/A' }}</td>
+          <td>{{ v.employee_name }} ({{ v.designation }})</td>
+          <td>{{ v.visit_reason }}</td>
+          <td>
+            <img src="{{ url_for('static', filename=v.photo) }}" alt="Photo" width="60">
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

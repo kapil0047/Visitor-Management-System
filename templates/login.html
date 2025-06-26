@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Login | Pyrotech Visit</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body>
+  <div class="container">
+    <div class="glass-card">
+      <h2>Admin Login</h2>
+      <form method="POST">
+        <div class="input-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required>
+        </div>
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn">Login</button>
+        <div class="links">
+          <a href="{{ url_for('reset_password') }}">Forgot Password?</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

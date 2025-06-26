@@ -37,3 +37,27 @@ c.execute("INSERT INTO employees (name, designation) VALUES ('Raj Meena', 'Admin
 
 conn.commit()
 conn.close()
+from werkzeug.security import generate_password_hash
+import sqlite3
+
+conn = sqlite3.connect('database/visitors.db')
+c = conn.cursor()
+
+# Create table
+c.execute('''
+    CREATE TABLE IF NOT EXISTS admins (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL
+    )
+''')
+
+# Insert a hashed password for 'admin'
+hashed_password = generate_password_hash('admin123')
+try:
+    c.execute("INSERT INTO admins (username, password) VALUES (?, ?)", ('admin', hashed_password))
+except sqlite3.IntegrityError:
+    print("Admin already exists.")
+
+conn.commit()
+conn.close()

@@ -69,3 +69,46 @@ body {
 .btn.secondary:hover {
   background-color: #f0f0f0;
 }
+.pass-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+}
+
+.info {
+  text-align: left;
+}
+
+.photo img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+input[type="text"],
+input[type="password"] {
+  width: 90%;
+  padding: 12px;
+  margin: 5px auto;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #2e0775;
+  outline: none;
+}
+
+input[type="text"]::placeholder,
+input[type="password"]::placeholder {
+  color: #999;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+body {
+  background-color: #111;
+}

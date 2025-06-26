@@ -1,0 +1,109 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to right, #002f5d, #5ea6e9);
+  color: #fff;
+  min-height: 100vh;
+}
+
+.admin-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  background: rgba(20, 40, 80, 0.4);
+  padding: 30px;
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+header h1 {
+  font-size: 28px;
+  color: #f0f8ff;
+}
+
+.logout-btn {
+  padding: 10px 18px;
+  background-color: #e6f0ff;
+  color: #002f5d;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.logout-btn:hover {
+  background-color: #4c94d4;
+  color: #fff;
+}
+
+h2 {
+  margin-bottom: 20px;
+  color: #d9ecff;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+th {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+img {
+  border-radius: 4px;
+  max-height: 60px;
+}
+.custom-admin-btn {
+  background-color: #ffffff10;
+  color: white;
+  padding: 8px 14px;
+  text-decoration: none;
+  border: 1px solid white;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background 0.3s;
+  margin-right: 10px;
+}
+
+.custom-admin-btn:hover {
+  background-color: #ffffff30;
+  color: #fff;
+}
+.glassy-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 10px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.glassy-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border-color: white;
+}
+.glassy-btn {
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
