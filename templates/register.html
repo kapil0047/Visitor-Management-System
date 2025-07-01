@@ -20,5 +20,15 @@
     </form>
     <a href="/admin" class="text-decoration-none mt-3 d-block text-center">Back to Dashboard</a>
   </div>
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="flash-message">
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
 </body>
 </html>

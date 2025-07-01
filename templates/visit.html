@@ -30,9 +30,12 @@
           <input type="file" name="photo" id="photo" required>
         </div>
 
+        <label for="visit_reason">Visit Reason:</label>
+        <input type="text" name="visit_reason" id="visit_reason" required>
+
         <div class="form-group">
           <label for="employee">Whom to Visit</label>
-          <select name="employee" id="employee" required>
+          <select name="employee_id" id="employee_id" required>
             {% for employee in employees %}
               <option value="{{ employee.id }}">{{ employee.name }} - {{ employee.designation }}</option>
             {% endfor %}

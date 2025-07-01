@@ -2,7 +2,7 @@ body {
   margin: 0;
   padding: 0;
   height: 100vh;
-  background: linear-gradient(to right, #002f5d, #5ea6e9);
+  background: linear-gradient(to right, #002f5d, #083967);
   font-family: 'Segoe UI', sans-serif;
   display: flex;
   justify-content: center;
@@ -28,17 +28,17 @@ body {
 .glass-card h2 {
   font-size: 28px;
   margin-bottom: 20px;
-  color: #b0eaff;
+  color: #060b69;
 }
 
 .glass-card p {
   font-size: 16px;
   margin-bottom: 10px;
-  color: #d9ecff;
+  color: #10477e;
 }
 
 .btn {
-  background-color: #ffffff;
+  background-color: #3d2099;
   color: #002f5d;
   padding: 10px 20px;
   border: none;
@@ -51,6 +51,54 @@ body {
 }
 
 .btn:hover {
-  background-color: #4c94d4;
+  background-color: #07355e;
   color: white;
+}
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f0f2f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  padding: 20px;
+}
+
+.glass-card {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  text-align: center;
+  max-width: 500px;
+}
+
+.photo img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.details p {
+  margin: 6px 0;
+  font-size: 16px;
+}
+
+.actions {
+  margin-top: 20px;
+}
+
+.btn {
+  background-color: #003366;
+  color: white;
+  padding: 10px 15px;
+  margin: 5px;
+  text-decoration: none;
+  border-radius: 6px;
+  display: inline-block;
 }

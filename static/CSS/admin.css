@@ -29,25 +29,77 @@ header h1 {
   color: #f0f8ff;
 }
 
-.logout-btn {
-  padding: 10px 18px;
-  background-color: #e6f0ff;
-  color: #002f5d;
-  text-decoration: none;
+/* Universal button style */
+.custom-admin-btn,
+.logout-btn,
+.glassy-btn,
+button {
+  background-color: #ffffff10;
+  color: white;
+  padding: 8px 14px;
+  border: 1px solid white;
   border-radius: 8px;
-  font-weight: 600;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.3s ease, color 0.3s ease;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
 }
 
-.logout-btn:hover {
-  background-color: #4c94d4;
+.custom-admin-btn:hover,
+.logout-btn:hover,
+.glassy-btn:hover,
+button:hover {
+  background-color: #ffffff30;
   color: #fff;
 }
 
-h2 {
+/* Group buttons with spacing */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
   margin-bottom: 20px;
-  color: #d9ecff;
 }
 
+/* Filters section */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.filters input,
+.filters select {
+  background-color: #ffffff10;
+  color: white;
+  padding: 8px 14px;
+  border: 1px solid white;
+  border-radius: 8px;
+  font-weight: 500;
+  font-family: 'Segoe UI', sans-serif;
+  transition: background 0.3s ease, color 0.3s ease;
+  outline: none;
+  min-width: 200px;
+  appearance: none;
+}
+
+.filters input::placeholder {
+  color: #ccc;
+}
+
+.filters select {
+  background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position-x: 95%;
+  background-position-y: center;
+  background-size: 14px;
+  padding-right: 30px;
+}
+
+/* Table styling */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -56,7 +108,8 @@ table {
   overflow: hidden;
 }
 
-th, td {
+th,
+td {
   padding: 12px 15px;
   text-align: left;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
@@ -70,40 +123,32 @@ img {
   border-radius: 4px;
   max-height: 60px;
 }
-.custom-admin-btn {
-  background-color: #ffffff10;
-  color: white;
-  padding: 8px 14px;
-  text-decoration: none;
-  border: 1px solid white;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: background 0.3s;
-  margin-right: 10px;
-}
 
-.custom-admin-btn:hover {
-  background-color: #ffffff30;
-  color: #fff;
-}
-.glassy-btn {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  padding: 8px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 10px;
-  font-weight: 500;
-  text-decoration: none;
-  transition: 0.3s ease;
-  backdrop-filter: blur(5px);
-}
+/* Print view cleanup */
+@media print {
+  .logout-btn,
+  .glassy-btn,
+  .filters,
+  header,
+  button,
+  .custom-admin-btn,
+  .actions {
+    display: none !important;
+  }
 
-.glassy-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
-  border-color: white;
-}
-.glassy-btn {
-  margin-right: 10px;
-  margin-bottom: 10px;
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  table,
+  th,
+  td {
+    border: 1px solid #000;
+    color: #000 !important;
+  }
+
+  body {
+    background: #fff !important;
+  }
 }

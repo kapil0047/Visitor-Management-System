@@ -16,11 +16,14 @@
       </div>
     </header>
 
-    <a href="{{ url_for('welcome') }}" class="glassy-btn">← Back to Home</a>
-    <button onclick="exportToExcel()" class="glassy-btn">📄 Export to Excel</button>
-    <button onclick="printAsPDF()" class="glassy-btn">🖨️ Print as PDF</button>
+    <!-- Button Group -->
+    <div class="actions">
+      <a href="{{ url_for('welcome') }}" class="glassy-btn">← Back to Home</a>
+      <button onclick="exportTableToExcel()" class="glassy-btn">📄 Export to Excel</button>
+      <button onclick="printAsPDF()" class="glassy-btn">🖨️ Print as PDF</button>
+    </div>
 
-
+    <!-- Filter Section -->
     <div class="filters">
       <input type="text" id="searchInput" placeholder="Search visitor name or phone...">
       <select id="employeeFilter">
@@ -31,11 +34,7 @@
       </select>
     </div>
 
-    <div class="export-buttons">
-      <button onclick="exportTableToExcel()">Export to Excel</button>
-      <button onclick="window.print()">Print as PDF</button>
-    </div>
-
+    <!-- Visitor Log Table -->
     <table>
       <thead>
         <tr>
@@ -57,16 +56,15 @@
             <td>{{ visitor.name }}</td>
             <td>{{ visitor.email }}</td>
             <td>{{ visitor.phone }}</td>
-            <td>{{ visitor.employee }}</td>
+            <td>{{ visitor.employee_name }}</td>
             <td>{{ visitor.designation }}</td>
-            <td>{{ visitor.reason }}</td>
+            <td>{{ visitor.visit_reason }}</td>
             <td>
               {% if visitor.photo %}
               <img src="{{ url_for('static', filename=visitor.photo) }}" alt="Visitor Photo" width="100">
               {% else %}
-               No Photo
-               {% endif %}
-
+              No Photo
+              {% endif %}
             </td>
             <td>{{ visitor.checkin_time or 'N/A' }}</td>
           </tr>
@@ -100,6 +98,10 @@
 
     searchInput.addEventListener('input', filterRows);
     employeeFilter.addEventListener('change', filterRows);
+
+    function printAsPDF() {
+      window.print();
+    }
 
     function exportTableToExcel(filename = 'visitor_logs.xlsx') {
       const table = document.querySelector('table');

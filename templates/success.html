@@ -2,96 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Visitor Pass</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- External Libraries -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f5f5f5;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-
-    .card-pass {
-      background: white;
-      padding: 30px 40px;
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-      text-align: center;
-      max-width: 500px;
-    }
-
-    .card-pass h2 {
-      color: #002f5d;
-      margin-bottom: 20px;
-    }
-
-    .card-pass p {
-      margin: 5px 0;
-    }
-
-    .visitor-photo {
-      margin: 20px 0;
-      width: 100px;
-      height: 100px;
-      border-radius: 12px;
-      object-fit: cover;
-      border: 2px solid #002f5d;
-    }
-
-    .buttons {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-    }
-
-    .btn-custom {
-      padding: 10px 20px;
-      background-color: #002f5d;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .btn-custom:hover {
-      background-color: #0056a3;
-    }
-  </style>
+  <title>Visitor Check-In Successful | Pyrotech Visit</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/success.css') }}">
 </head>
-
 <body>
-  <div id="pass" class="card-pass">
-    <h2>Visitor Check-In Successful</h2>
+  <div class="container">
+    <div class="glass-card">
+      <h2>Visitor Check-In Successful</h2>
 
-    <p><strong>Name:</strong> {{ name }}</p>
-    <p><strong>Check-in Time:</strong> {{ checkin_time }}</p>
-    <p><strong>Status:</strong> Approved</p>
+      <div class="photo">
+        <img src="{{ photo_url }}" alt="Visitor Photo">
+      </div>
 
-    <img src="{{ photo_url }}" alt="Visitor Photo" class="visitor-photo">
+      <div class="details">
+        <p><strong>Name:</strong> {{ name }}</p>
+        <p><strong>Check-in Time:</strong> {{ checkin_time }}</p>
+        <p><strong>Status:</strong> Approved</p>
+        <p><strong>Thank you for visiting <b>Pyrotech</b>!</strong></p>
+      </div>
 
-    <p><strong>Thank you for visiting Pyrotech!</strong></p>
-
-    <div class="buttons">
-      <button class="btn-custom" onclick="window.print()">Print</button>
-      <button class="btn-custom" onclick="downloadPDF()">Download PDF</button>
+      <div class="actions">
+        <a href="{{ url_for('download_pdf', filename=pdf_filename) }}" class="btn">Visitor Pass (PDF)</a>
+        <a href="#" onclick="window.print()" class="btn">Print</a>
+        <a href="/" class="btn">Back to Home</a>
+      </div>
     </div>
   </div>
-
-  <script>
-    function downloadPDF() {
-      const element = document.getElementById('pass');
-      html2pdf().from(element).save('Visitor_Pass.pdf');
-    }
-  </script>
 </body>
 </html>
