@@ -33,45 +33,56 @@
         {% endfor %}
       </select>
     </div>
-
     <!-- Visitor Log Table -->
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Visitor Name</th>
-          <th>Email</th>
-          <th>Phone</th>
-          <th>Employee</th>
-          <th>Designation</th>
-          <th>Visit Reason</th>
-          <th>Photo</th>
-          <th>Check-In Time</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for visitor in visitors %}
-          <tr>
-            <td>{{ loop.index }}</td>
-            <td>{{ visitor.name }}</td>
-            <td>{{ visitor.email }}</td>
-            <td>{{ visitor.phone }}</td>
-            <td>{{ visitor.employee_name }}</td>
-            <td>{{ visitor.designation }}</td>
-            <td>{{ visitor.visit_reason }}</td>
-            <td>
-              {% if visitor.photo %}
-              <img src="{{ url_for('static', filename=visitor.photo) }}" alt="Visitor Photo" width="100">
-              {% else %}
-              No Photo
-              {% endif %}
-            </td>
-            <td>{{ visitor.checkin_time or 'N/A' }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+<table class="visitor-log-table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Visitor Name</th>
+      <th>Email</th>
+      <th>Phone</th>
+      <th>Employee</th>
+      <th>Designation</th>
+      <th>Visit Reason</th>
+      <th>Photo</th>
+      <th>Check-In Time</th>
+      <th>Check-Out Time</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for visitor in visitors %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td>{{ visitor.name }}</td>
+      <td>{{ visitor.email }}</td>
+      <td>{{ visitor.phone }}</td>
+      <td>{{ visitor.employee_name }}</td>
+      <td>{{ visitor.designation }}</td>
+      <td>{{ visitor.visit_reason }}</td>
+      <td><img src="{{ url_for('static', filename=visitor.photo) }}" width="50"></td>
+      <td>{{ visitor.checkin_time }}</td>
+      <td>
+        {% if visitor.checkout_time %}
+          {{ visitor.checkout_time }}
+        {% else %}
+          ---
+        {% endif %}
+      </td>
+      <td>
+        {% if not visitor.checkout_time %}
+        <form method="POST" action="{{ url_for('checkout_visitor', visitor_id=visitor.id) }}">
+          <button type="submit">Check Out</button>
+        </form>
+        {% else %}
+          ✅
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
 
   <script>
     const searchInput = document.getElementById('searchInput');

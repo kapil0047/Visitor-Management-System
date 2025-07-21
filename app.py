@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import sqlite3
 import os
 import time
@@ -9,16 +10,41 @@ from email.message import EmailMessage
 from datetime import datetime
 from fpdf import FPDF
 
+# Flask app setup
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 
-# Folder paths
+# File folders
 UPLOAD_FOLDER = 'static/uploads'
 PDF_FOLDER = 'static/passes'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(PDF_FOLDER, exist_ok=True)
 
-# Email configuration
+# Flask-Login setup
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+# --------------------------- LOGIN SYSTEM ---------------------------
+
+class Admin(UserMixin):
+    def __init__(self, id_, username):
+        self.id = id_
+        self.username = username
+
+@login_manager.user_loader
+def load_user(admin_id):
+    conn = sqlite3.connect('database/visitors.db')
+    c = conn.cursor()
+    c.execute("SELECT rowid, username FROM admins WHERE rowid = ?", (admin_id,))
+    result = c.fetchone()
+    conn.close()
+    if result:
+        return Admin(result[0], result[1])
+    return None
+
+# --------------------------- EMAIL ---------------------------
+
 SENDER_EMAIL = 'menariaprachi0@gmail.com'
 APP_PASSWORD = 'abgn tmln amyj eqnf'
 
@@ -34,6 +60,8 @@ def send_email(to_email, visitor_name):
             smtp.send_message(msg)
     except Exception as e:
         print("Email sending failed:", e)
+
+# --------------------------- PDF PASS ---------------------------
 
 def generate_visitor_pass(name, checkin_time, photo_path, employee_name):
     pdf = FPDF()
@@ -87,6 +115,8 @@ def generate_visitor_pass(name, checkin_time, photo_path, employee_name):
 
     return filename
 
+# --------------------------- ROUTES ---------------------------
+
 @app.route('/')
 def welcome():
     return render_template('welcome.html')
@@ -128,7 +158,6 @@ def checkin():
     """, (name, email, phone, employee_id, visit_reason, db_photo_path, checkin_time))
     conn.commit()
 
-    # Get employee name for PDF
     c.execute("SELECT name, email FROM employees WHERE id = ?", (employee_id,))
     emp = c.fetchone()
     employee_name = emp['name'] if emp else "N/A"
@@ -151,35 +180,25 @@ def success():
     return render_template('success.html')
 
 @app.route('/admin')
+@login_required
 def admin():
-    if not session.get('logged_in'):
-        return redirect(url_for('login'))
-
     conn = sqlite3.connect('database/visitors.db')
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
-
     c.execute("""
         SELECT v.*, e.name AS employee_name, e.designation 
         FROM visitors v 
         LEFT JOIN employees e ON v.employee_id = e.id
     """)
     visitors = c.fetchall()
-
-    # fetch distinct employee names for filter dropdown
     c.execute("SELECT DISTINCT name FROM employees")
     employees = [row[0] for row in c.fetchall()]
     conn.close()
-
     return render_template('admin.html', visitors=visitors, employees=employees)
 
-
-
 @app.route('/admin/visitors')
+@login_required
 def visitor_log():
-    if not session.get('logged_in'):
-        return redirect(url_for('login'))
-
     conn = sqlite3.connect('database/visitors.db')
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
@@ -200,11 +219,12 @@ def login():
         password = request.form['password']
         conn = sqlite3.connect('database/visitors.db')
         c = conn.cursor()
-        c.execute("SELECT password FROM admins WHERE username = ?", (username,))
+        c.execute("SELECT rowid, password FROM admins WHERE username = ?", (username,))
         result = c.fetchone()
         conn.close()
-        if result and check_password_hash(result[0], password):
-            session['logged_in'] = True
+        if result and check_password_hash(result[1], password):
+            admin = Admin(result[0], username)
+            login_user(admin)
             return redirect(url_for('admin'))
         else:
             flash("Invalid credentials.")
@@ -212,15 +232,14 @@ def login():
     return render_template('login.html')
 
 @app.route('/logout')
+@login_required
 def logout():
-    session.pop('logged_in', None)
+    logout_user()
     return redirect(url_for('login'))
 
 @app.route('/register', methods=['GET', 'POST'])
+@login_required
 def register_admin():
-    if not session.get('logged_in'):
-        return redirect(url_for('login'))
-
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -238,6 +257,7 @@ def register_admin():
     return render_template('register.html')
 
 @app.route('/reset-password', methods=['GET', 'POST'])
+@login_required
 def reset_password():
     if request.method == 'POST':
         username = request.form['username']
@@ -258,6 +278,21 @@ def reset_password():
         flash("Password updated successfully." if updated else "Username not found.")
         return redirect(url_for('login'))
     return render_template('reset_password.html')
+
+@app.route('/checkout/<int:visitor_id>', methods=['POST'])
+@login_required
+def checkout_visitor(visitor_id):
+    checkout_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    conn = sqlite3.connect('database/visitors.db')
+    c = conn.cursor()
+    c.execute("UPDATE visitors SET checkout_time = ? WHERE id = ?", (checkout_time, visitor_id))
+    conn.commit()
+    conn.close()
+    flash("Visitor checked out successfully.")
+    return redirect(url_for('admin'))
+
+
+# --------------------------- START ---------------------------
 
 if __name__ == '__main__':
     app.run(debug=True)

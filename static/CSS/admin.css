@@ -87,7 +87,7 @@ button:hover {
 }
 
 .filters input::placeholder {
-  color: #ccc;
+  color: #f7f0f0;
 }
 
 .filters select {
@@ -149,6 +149,29 @@ img {
   }
 
   body {
-    background: #fff !important;
+    background: #ebe1e1 !important;
   }
+}
+.visitor-log-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: rgb(2, 55, 154);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.visitor-log-table th,
+.visitor-log-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #024991;
+}
+
+.visitor-log-table th {
+  background-color: #114B8C;
+  color: white;
+}
+
+.visitor-log-table tr:nth-child(even) {
+  background-color: #022c80;
 }
