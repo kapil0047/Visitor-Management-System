@@ -1,298 +1,270 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory
+from flask import (
+    Flask, render_template, request, redirect,
+    url_for, session, flash, jsonify, send_file
+)
+from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-import sqlite3
-import os
-import time
-import smtplib
-from email.message import EmailMessage
-from datetime import datetime
 from fpdf import FPDF
+from sqlalchemy.orm import joinedload
+import os
+import base64
+import datetime
+import io
+from PIL import Image
+from io import BytesIO
+from datetime import datetime
 
-# Flask app setup
+from models import db, Admin, Employee, Visitor
+import pandas as pd
+from flask import send_file
+import io
+from io import BytesIO
+from flask_migrate import Migrate
+# ----------------------------------------
+# App Config
+# ----------------------------------------
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'
+app.secret_key = 'your_secret_key'
 
-# File folders
-UPLOAD_FOLDER = 'static/uploads'
-PDF_FOLDER = 'static/passes'
+# PostgreSQL Database Config
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Prachi123@localhost:5432/visitor_MSdb'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+migrate = Migrate(app, db)
+# File Upload Config
+UPLOAD_FOLDER = 'static/uploads/'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(PDF_FOLDER, exist_ok=True)
 
-# Flask-Login setup
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'login'
+# Initialize DB
+db.init_app(app)
 
-# --------------------------- LOGIN SYSTEM ---------------------------
+# ----------------------------------------
+# Create Tables + Default Data
+# ----------------------------------------
 
-class Admin(UserMixin):
-    def __init__(self, id_, username):
-        self.id = id_
-        self.username = username
+with app.app_context():
+    db.create_all()
 
-@login_manager.user_loader
-def load_user(admin_id):
-    conn = sqlite3.connect('database/visitors.db')
-    c = conn.cursor()
-    c.execute("SELECT rowid, username FROM admins WHERE rowid = ?", (admin_id,))
-    result = c.fetchone()
-    conn.close()
-    if result:
-        return Admin(result[0], result[1])
-    return None
+    if not Admin.query.filter_by(username="admin").first():
+        pw_hash = generate_password_hash("admin")
+        db.session.add(Admin(username="admin", password=pw_hash))
 
-# --------------------------- EMAIL ---------------------------
+    if not Admin.query.filter_by(username="admin1").first():
+        pw_hash = generate_password_hash("admin123")
+        db.session.add(Admin(username="admin1", password=pw_hash))
 
-SENDER_EMAIL = 'menariaprachi0@gmail.com'
-APP_PASSWORD = 'abgn tmln amyj eqnf'
+    if Employee.query.count() == 0:
+        emp1 = Employee(name="Prachi Menaria", email="prachi@example.com", designation="Software Engineer")
+        emp2 = Employee(name="Yash Mehta", email="yash@example.com", designation="HR Manager")
+        db.session.add_all([emp1, emp2])
+    
+    db.session.commit()
 
-def send_email(to_email, visitor_name):
-    msg = EmailMessage()
-    msg['Subject'] = 'Visitor Check-In Notification'
-    msg['From'] = SENDER_EMAIL
-    msg['To'] = to_email
-    msg.set_content(f"Hello,\n\n{visitor_name} has arrived to meet you.\n\n- Pyrotech Visitor System")
-    try:
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-            smtp.login(SENDER_EMAIL, APP_PASSWORD)
-            smtp.send_message(msg)
-    except Exception as e:
-        print("Email sending failed:", e)
-
-# --------------------------- PDF PASS ---------------------------
-
-def generate_visitor_pass(name, checkin_time, photo_path, employee_name):
-    pdf = FPDF()
-    pdf.add_page()
-
-    pdf.set_font("Arial", 'B', 18)
-    pdf.set_text_color(0, 51, 102)
-    pdf.cell(0, 15, "PYROTECH VISITOR PASS", ln=True, align='C')
-
-    pdf.set_draw_color(80, 80, 80)
-    pdf.rect(10, 25, 190, 100)
-
-    image_path = os.path.join('static', photo_path)
-    if os.path.exists(image_path):
-        pdf.image(image_path, x=15, y=35, w=40, h=40)
-
-    pdf.set_xy(60, 35)
-    pdf.set_font("Arial", 'B', 12)
-    pdf.set_text_color(0, 0, 0)
-    pdf.cell(50, 10, "Name:")
-    pdf.set_font("Arial", '', 12)
-    pdf.cell(0, 10, name, ln=True)
-
-    pdf.set_x(60)
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(50, 10, "Check-in Time:")
-    pdf.set_font("Arial", '', 12)
-    pdf.cell(0, 10, checkin_time, ln=True)
-
-    pdf.set_x(60)
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(50, 10, "Employee to Meet:")
-    pdf.set_font("Arial", '', 12)
-    pdf.cell(0, 10, employee_name, ln=True)
-
-    pdf.set_x(60)
-    pdf.set_font("Arial", 'B', 12)
-    pdf.set_text_color(0, 100, 0)
-    pdf.cell(50, 10, "Status:")
-    pdf.set_font("Arial", '', 12)
-    pdf.cell(0, 10, "Approved", ln=True)
-
-    pdf.set_y(-30)
-    pdf.set_font("Arial", 'I', 10)
-    pdf.set_text_color(80, 80, 80)
-    pdf.cell(0, 10, "Thank you for visiting Pyrotech!", ln=True, align='C')
-
-    filename = f"Visitor_Pass_{int(time.time())}.pdf"
-    filepath = os.path.join(PDF_FOLDER, filename)
-    pdf.output(filepath)
-
-    return filename
-
-# --------------------------- ROUTES ---------------------------
+# ----------------------------------------
+# Routes
+# ----------------------------------------
 
 @app.route('/')
+def index():
+    return render_template('welcome.html')
+
+@app.route('/welcome')
 def welcome():
     return render_template('welcome.html')
 
-@app.route('/visitor')
+
+@app.route('/visitor_form', methods=['GET', 'POST'])
 def visitor_form():
-    conn = sqlite3.connect('database/visitors.db')
-    conn.row_factory = sqlite3.Row
-    c = conn.cursor()
-    c.execute("SELECT * FROM employees")
-    employees = c.fetchall()
-    conn.close()
-    return render_template('index.html', employees=employees)
+    employees = Employee.query.all()
 
-@app.route('/checkin', methods=['POST'])
-def checkin():
-    name = request.form['name']
-    email = request.form['email']
-    phone = request.form['phone']
-    employee_id = request.form['employee_id']
-    visit_reason = request.form['visit_reason']
-    photo_file = request.files['photo']
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        visit_reason = request.form.get('visit_reason')
+        employee_id = request.form.get('employee_id')
+        webcam_data = request.form.get('webcam_image')
+        image = request.files.get('image')
 
-    filename = secure_filename(photo_file.filename)
-    unique_filename = f"{int(time.time())}_{filename}"
-    photo_path = os.path.join(UPLOAD_FOLDER, unique_filename)
-    photo_file.save(photo_path)
+        filename = None
 
-    db_photo_path = os.path.join('uploads', unique_filename).replace("\\", "/")
-    photo_url = url_for('static', filename=db_photo_path)
-    checkin_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        if webcam_data:
+            try:
+                header, encoded = webcam_data.split(",", 1)
+                image_data = base64.b64decode(encoded)
+                image_pil = Image.open(BytesIO(image_data))
+                filename = f"{name}_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.png"
+                image_pil.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            except Exception as e:
+                print("Webcam image error:", e)
 
-    conn = sqlite3.connect('database/visitors.db')
-    conn.row_factory = sqlite3.Row
-    c = conn.cursor()
-    c.execute("""
-        INSERT INTO visitors (name, email, phone, employee_id, visit_reason, photo, checkin_time)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    """, (name, email, phone, employee_id, visit_reason, db_photo_path, checkin_time))
-    conn.commit()
+        elif image and image.filename:
+            filename = secure_filename(image.filename)
+            image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            
+        new_visitor = Visitor(
+            name=name,
+            email=email,
+            phone=phone,
+            visit_reason=visit_reason,
+            employee_id=employee_id,
+            image_filename=filename  # this must match your model
+        )
+        db.session.add(new_visitor)
+        db.session.commit()
+        return redirect(url_for('visitor_pass', visitor_id=new_visitor.id))
+    employees = Employee.query.all()
+    return render_template('visitor_form.html', employees=employees)
 
-    c.execute("SELECT name, email FROM employees WHERE id = ?", (employee_id,))
-    emp = c.fetchone()
-    employee_name = emp['name'] if emp else "N/A"
-    employee_email = emp['email'] if emp and 'email' in emp.keys() else None
-    conn.close()
-
-    if employee_email:
-        send_email(employee_email, name)
-
-    pdf_filename = generate_visitor_pass(name, checkin_time, db_photo_path, employee_name)
-
-    return render_template("success.html", name=name, checkin_time=checkin_time, photo_url=photo_url, pdf_filename=pdf_filename)
-
-@app.route('/download/<filename>')
-def download_pdf(filename):
-    return send_from_directory(PDF_FOLDER, filename, as_attachment=True)
 
 @app.route('/success')
 def success():
-    return render_template('success.html')
+    return "✅ Visitor registered successfully."
 
-@app.route('/admin')
-@login_required
-def admin():
-    conn = sqlite3.connect('database/visitors.db')
-    conn.row_factory = sqlite3.Row
-    c = conn.cursor()
-    c.execute("""
-        SELECT v.*, e.name AS employee_name, e.designation 
-        FROM visitors v 
-        LEFT JOIN employees e ON v.employee_id = e.id
-    """)
-    visitors = c.fetchall()
-    c.execute("SELECT DISTINCT name FROM employees")
-    employees = [row[0] for row in c.fetchall()]
-    conn.close()
-    return render_template('admin.html', visitors=visitors, employees=employees)
+@app.route('/get_employees')
+def get_employees():
+    employees = Employee.query.all()
+    return jsonify([
+        {'id': e.id, 'name': e.name, 'designation': e.designation}
+        for e in employees
+    ])
 
-@app.route('/admin/visitors')
-@login_required
-def visitor_log():
-    conn = sqlite3.connect('database/visitors.db')
-    conn.row_factory = sqlite3.Row
-    c = conn.cursor()
-    c.execute("""
-        SELECT v.*, e.name AS employee_name, e.designation 
-        FROM visitors v 
-        LEFT JOIN employees e ON v.employee_id = e.id
-        ORDER BY v.id DESC
-    """)
-    visitors = c.fetchall()
-    conn.close()
-    return render_template('visitor_log.html', visitors=visitors)
+@app.route('/generate_pass/<int:visitor_id>')
+def generate_pass(visitor_id):
+    visitor = Visitor.query.get_or_404(visitor_id)
+    employee = Employee.query.get(visitor.employee_id)
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        conn = sqlite3.connect('database/visitors.db')
-        c = conn.cursor()
-        c.execute("SELECT rowid, password FROM admins WHERE username = ?", (username,))
-        result = c.fetchone()
-        conn.close()
-        if result and check_password_hash(result[1], password):
-            admin = Admin(result[0], username)
-            login_user(admin)
-            return redirect(url_for('admin'))
-        else:
-            flash("Invalid credentials.")
-            return redirect(url_for('login'))
-    return render_template('login.html')
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+    pdf.cell(200, 10, txt="Visitor Pass", ln=True, align='C')
+    pdf.cell(200, 10, txt=f"Name: {visitor.name}", ln=True)
+    pdf.cell(200, 10, txt=f"Email: {visitor.email}", ln=True)
+    pdf.cell(200, 10, txt=f"Phone: {visitor.phone}", ln=True)
+    pdf.cell(200, 10, txt=f"Purpose: {visitor.visit_reason}", ln=True)
+    pdf.cell(200, 10, txt=f"Date: {visitor.date.strftime('%d %B %Y')}", ln=True)
+    pdf.cell(200, 10, txt=f"Employee to Visit: {employee.name}", ln=True)
 
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('login'))
+    pdf_output = io.BytesIO()
+    pdf.output(pdf_output)
+    pdf_output.seek(0)
 
-@app.route('/register', methods=['GET', 'POST'])
-@login_required
-def register_admin():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        hashed_password = generate_password_hash(password)
-        conn = sqlite3.connect('database/visitors.db')
-        c = conn.cursor()
-        try:
-            c.execute("INSERT INTO admins (username, password) VALUES (?, ?)", (username, hashed_password))
-            conn.commit()
-            flash("✅ New admin registered!")
-        except sqlite3.IntegrityError:
-            flash("⚠️ Username already exists.")
-        conn.close()
-        return redirect(url_for('register_admin'))
-    return render_template('register.html')
+    return send_file(pdf_output, download_name='visitor_pass.pdf', as_attachment=True)
 
-@app.route('/reset-password', methods=['GET', 'POST'])
-@login_required
-def reset_password():
-    if request.method == 'POST':
-        username = request.form['username']
-        new_password = request.form['new_password']
-        confirm_password = request.form['confirm_password']
-
-        if new_password != confirm_password:
-            flash("Passwords do not match.")
-            return redirect(url_for('reset_password'))
-
-        hashed_password = generate_password_hash(new_password)
-        conn = sqlite3.connect('database/visitors.db')
-        c = conn.cursor()
-        c.execute("UPDATE admins SET password = ? WHERE username = ?", (hashed_password, username))
-        conn.commit()
-        updated = c.rowcount
-        conn.close()
-        flash("Password updated successfully." if updated else "Username not found.")
-        return redirect(url_for('login'))
-    return render_template('reset_password.html')
+@app.route('/visitor_pass/<int:visitor_id>')
+def visitor_pass(visitor_id):
+    visitor = Visitor.query.get_or_404(visitor_id)
+    return render_template('visitor_pass.html', visitor=visitor)
 
 @app.route('/checkout/<int:visitor_id>', methods=['POST'])
-@login_required
 def checkout_visitor(visitor_id):
-    checkout_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    conn = sqlite3.connect('database/visitors.db')
-    c = conn.cursor()
-    c.execute("UPDATE visitors SET checkout_time = ? WHERE id = ?", (checkout_time, visitor_id))
-    conn.commit()
-    conn.close()
-    flash("Visitor checked out successfully.")
-    return redirect(url_for('admin'))
+    v = Visitor.query.get_or_404(visitor_id)
+    v.checkout = datetime.utcnow()
+    db.session.commit()
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/export_excel')
+def export_excel():
+    rows = []
+    for v in Visitor.query.options(db.joinedload(Visitor.employee)).all():
+        rows.append({
+          'Visitor Name':    v.name,
+          'Email':           v.email,
+          'Phone':           v.phone,
+          'Employee Name':   v.employee.name if v.employee else '',
+          'Designation':     v.employee.designation if v.employee else '',
+          'Visit Reason':    v.visit_reason,
+          'Check‑in Time':   v.checkin_str,
+          'Check‑out Time':  v.checkout_str,
+        })
+    df = pd.DataFrame(rows)
+    out = BytesIO()
+    df.to_excel(out, index=False)
+    out.seek(0)
+    return send_file(out, download_name="visitor_logs.xlsx", as_attachment=True)
 
 
-# --------------------------- START ---------------------------
+@app.route('/adminlogin', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        admin = Admin.query.filter_by(username=username).first()
 
+        if admin and check_password_hash(admin.password, password):
+            session['admin_id'] = admin.username
+            return redirect(url_for('admin_dashboard'))  # update this with your dashboard route
+        else:
+            flash('Invalid username or password', 'error')
+
+    return render_template('admin_login.html')
+
+
+
+@app.route('/edit_visitor/<int:id>', methods=['GET', 'POST'])
+def edit_visitor(id):
+    visitor = Visitor.query.get_or_404(id)
+    if request.method == 'POST':
+        visitor.name = request.form['name']
+        visitor.email = request.form['email']
+        # ... other fields
+        db.session.commit()
+        return redirect(url_for('admin_dashboard'))
+    return render_template('edit_visitor.html', visitor=visitor)
+
+@app.route('/add_employee', methods=['GET', 'POST'])
+def add_employee():
+    if session.get('role') != 'superuser':
+        return "Unauthorized", 403
+    if request.method == 'POST':
+        name = request.form['name']
+        designation = request.form['designation']
+        new_emp = Employee(name=name, designation=designation)
+        db.session.add(new_emp)
+        db.session.commit()
+        return redirect(url_for('admin_dashboard'))
+    return render_template('add_employee.html')
+
+# Keep only this one:
+@app.route('/admin_dashboard')
+def admin_dashboard():
+    if 'admin_id' not in session:
+        return redirect(url_for('admin_login'))
+
+    visitors = (Visitor.query
+                .options(joinedload(Visitor.employee))
+                .order_by(Visitor.checkin.desc())
+                .all())
+    employees = Employee.query.order_by(Employee.name).all()
+
+    return render_template(
+        'admin_dashboard.html',
+        visitors=visitors,
+        employees=employees
+    )
+
+
+@app.route('/delete_visitor/<int:visitor_id>', methods=['POST'])
+def delete_visitor(visitor_id):
+    if 'admin' not in session:
+        return redirect(url_for('admin_login'))
+
+    visitor = Visitor.query.get_or_404(visitor_id)
+    db.session.delete(visitor)
+    db.session.commit()
+    flash('Visitor deleted successfully.', 'success')
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/logout')
+def logout():
+    session.pop('admin', None)
+    flash('Logged out.', 'info')
+    return redirect(url_for('admin_login'))
+
+# ----------------------------------------
+# Run the App
+# ----------------------------------------
 if __name__ == '__main__':
     app.run(debug=True)

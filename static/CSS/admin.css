@@ -1,177 +1,61 @@
 body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(to right, #002f5d, #5ea6e9);
-  color: #fff;
-  min-height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f8f9fa;
+    padding: 20px;
+    color: #333;
 }
 
-.admin-container {
-  max-width: 1200px;
-  margin: 40px auto;
-  background: rgba(20, 40, 80, 0.4);
-  padding: 30px;
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+.admin-buttons .btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 8px 12px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
 }
 
-header h1 {
-  font-size: 28px;
-  color: #f0f8ff;
+.admin-buttons .btn:hover {
+    background-color: #0056b3;
 }
 
-/* Universal button style */
-.custom-admin-btn,
-.logout-btn,
-.glassy-btn,
-button {
-  background-color: #ffffff10;
-  color: white;
-  padding: 8px 14px;
-  border: 1px solid white;
-  border-radius: 8px;
-  font-weight: 500;
-  text-decoration: none;
-  transition: background 0.3s ease, color 0.3s ease;
-  margin-right: 10px;
-  margin-bottom: 10px;
-  cursor: pointer;
+.admin-filters {
+    margin-top: 20px;
+    margin-bottom: 10px;
 }
 
-.custom-admin-btn:hover,
-.logout-btn:hover,
-.glassy-btn:hover,
-button:hover {
-  background-color: #ffffff30;
-  color: #fff;
+.admin-filters input,
+.admin-filters select {
+    padding: 8px;
+    margin-right: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
-/* Group buttons with spacing */
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-/* Filters section */
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.filters input,
-.filters select {
-  background-color: #ffffff10;
-  color: white;
-  padding: 8px 14px;
-  border: 1px solid white;
-  border-radius: 8px;
-  font-weight: 500;
-  font-family: 'Segoe UI', sans-serif;
-  transition: background 0.3s ease, color 0.3s ease;
-  outline: none;
-  min-width: 200px;
-  appearance: none;
-}
-
-.filters input::placeholder {
-  color: #f7f0f0;
-}
-
-.filters select {
-  background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-  background-repeat: no-repeat;
-  background-position-x: 95%;
-  background-position-y: center;
-  background-size: 14px;
-  padding-right: 30px;
-}
-
-/* Table styling */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-th,
-td {
-  padding: 12px 15px;
-  text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-th {
-  background-color: rgba(0, 0, 0, 0.2);
-}
-
-img {
-  border-radius: 4px;
-  max-height: 60px;
-}
-
-/* Print view cleanup */
-@media print {
-  .logout-btn,
-  .glassy-btn,
-  .filters,
-  header,
-  button,
-  .custom-admin-btn,
-  .actions {
-    display: none !important;
-  }
-
-  table {
+.admin-table table {
     width: 100%;
     border-collapse: collapse;
-  }
-
-  table,
-  th,
-  td {
-    border: 1px solid #000;
-    color: #000 !important;
-  }
-
-  body {
-    background: #ebe1e1 !important;
-  }
-}
-.visitor-log-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: rgb(2, 55, 154);
-  border-radius: 8px;
-  overflow: hidden;
+    margin-top: 10px;
 }
 
-.visitor-log-table th,
-.visitor-log-table td {
-  padding: 12px 15px;
-  text-align: left;
-  border-bottom: 1px solid #024991;
+.admin-table th, .admin-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
 }
 
-.visitor-log-table th {
-  background-color: #114B8C;
-  color: white;
+.admin-table th {
+    background-color: #007bff;
+    color: white;
 }
 
-.visitor-log-table tr:nth-child(even) {
-  background-color: #022c80;
+.checked-out-label {
+    color: green;
+    font-weight: bold;
 }

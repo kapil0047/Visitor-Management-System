@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Visitor Pass</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .pass-card {
+            border: 2px solid #444;
+            padding: 20px;
+            width: 400px;
+            margin: 0 auto;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        .photo img {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+        .info p {
+            margin: 8px 0;
+        }
+        .buttons {
+            margin-top: 20px;
+        }
+        .buttons button {
+            margin: 5px;
+            padding: 10px 20px;
+            background-color: #444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .buttons button:hover {
+            background-color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h2>✅ Visitor Check-in Successful</h2>
+
+    <div class="pass-card" id="pass-content">
+        <div class="photo">
+            <img src="{{ url_for('static', filename='uploads/' + visitor.image_filename) }}" alt="Visitor Photo">
+        </div>
+        <div class="info">
+            <p><strong>Name:</strong> {{ visitor.name }}</p>
+            <p><strong>Check-in Time:</strong> {{ visitor.date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            <p><strong>Status:</strong> Approved</p>
+        </div>
+        <p><strong>Thank you for visiting Pyrotech</strong></p>
+    </div>
+
+    <div class="buttons">
+        <button onclick="downloadPDF()">Visitor Pass PDF</button>
+        <button onclick="window.print()">Print</button>
+        <a href="{{ url_for('index') }}"><button>Back to Home</button></a>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        function downloadPDF() {
+            const element = document.getElementById('pass-content');
+            html2pdf().from(element).save('Visitor_Pass.pdf');
+        }
+    </script>
+</body>
+</html>

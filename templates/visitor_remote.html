@@ -1,0 +1,79 @@
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold">Visitor Logs</h4>
+        <div>
+            <a href="{{ url_for('export_excel') }}" class="btn btn-success me-2">📄 Export to Excel</a>
+            <a href="{{ url_for('print_pdf') }}" class="btn btn-primary">🖨️ Print as PDF</a>
+        </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <form method="GET" action="{{ url_for('visitor_logs') }}" class="row g-3 mb-4">
+        <div class="col-md-6">
+            <input type="text" name="search" class="form-control" placeholder="Search visitor name or phone...">
+        </div>
+        <div class="col-md-4">
+            <select name="employee_id" class="form-select">
+                <option value="">Filter by Employee</option>
+                {% for emp in employees %}
+                    <option value="{{ emp.id }}">{{ emp.name }} - {{ emp.designation }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-outline-secondary w-100">Search</button>
+        </div>
+    </form>
+
+    <!-- Visitor Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Visitor Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Employee</th>
+                    <th>Designation</th>
+                    <th>Visit Reason</th>
+                    <th>Photo</th>
+                    <th>Check-In Time</th>
+                    <th>Check-Out Time</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for v in visitors %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ v.name }}</td>
+                        <td>{{ v.email }}</td>
+                        <td>{{ v.phone }}</td>
+                        <td>{{ v.employee.name }}</td>
+                        <td>{{ v.employee.designation }}</td>
+                        <td>{{ v.visit_reason }}</td>
+                        <td>
+                            {% if v.photo %}
+                                <img src="{{ url_for('static', filename='uploads/' + v.photo) }}" width="50" height="50" class="rounded-circle">
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>{{ v.check_in_time.strftime('%Y-%m-%d %H:%M') if v.check_in_time else '' }}</td>
+                        <td>{{ v.check_out_time.strftime('%Y-%m-%d %H:%M') if v.check_out_time else '' }}</td>
+                        <td>
+                            {% if not v.check_out_time %}
+                                <form method="POST" action="{{ url_for('checkout_visitor', visitor_id=v.id) }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">Check Out</button>
+                                </form>
+                            {% else %}
+                                ✅
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
