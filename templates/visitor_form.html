@@ -3,124 +3,190 @@
 <head>
   <meta charset="UTF-8">
   <title>Visitor Registration</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/visit.css') }}">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
     body {
-      font-family: "Arial", sans-serif;
-      max-width: 600px;
-      margin: 30px auto;
-      padding: 20px;
-      background-color: #f9f9f9;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #d0e7ff, #f0f9ff);
+      padding: 30px;
     }
+
+    .registration-card {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      padding: 50px 80px;
+      max-width: 2000px; /* Increased form width */
+      margin: 0 auto;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(10px);
+    }
+
     h2 {
       text-align: center;
+      color: #004a99;
+      font-weight: bold;
       margin-bottom: 30px;
     }
-    .form-group {
-      margin-bottom: 15px;
+
+    .form-group label {
+      font-weight: 600;
+      color: #333;
     }
-    label {
-      font-weight: bold;
-    }
-    video, canvas {
-      display: block;
-      margin: 10px auto;
+
+    #video, #capturedImage {
+      width: 100%;
       max-width: 300px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
-    .btn {
-      margin-top: 10px;
+
+    .capture-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .btn-primary, .btn-success {
+      border-radius: 25px;
+      padding: 10px 25px;
+    }
+
+    .btn-primary {
+      background-color: #0066cc;
+      border: none;
+    }
+
+    .btn-success {
+      background-color: #28a745;
+      border: none;
     }
   </style>
 </head>
 <body>
-  <h2>Visitor Registration</h2>
 
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <p style= color: {{ "green" if category == "success" else "red" }};">
-          {{ message }}
-        </p>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
+  <div class="registration-card">
+    <h2>Visitor Registration</h2>
 
-  <form method="POST" enctype="multipart/form-data">
-    <div class="form-group">
-      <label for="name">Name:</label>
-      <input type="text" name="name" class="form-control" required>
-    </div>
-
-    <div class="form-group">
-      <label for="email">Email:</label>
-      <input type="email" name="email" class="form-control" required>
-    </div>
-
-    <div class="form-group">
-      <label for="phone">Phone:</label>
-      <input type="text" name="phone" class="form-control" required>
-    </div>
-
-    <div class="form-group">
-      <label for="visit_reason">Purpose of Visit:</label>
-      <input type="text" name="visit_reason" class="form-control" required>
-    </div>
-
-    <div class="form-group">
-      <label for="employee_id">Employee:</label>
-      <select class="form-control" id="employee_id" name="employee_id" required>
-        {% for employee in employees %}
-          <option value="{{ employee.id }}">{{ employee.name }} - {{ employee.designation }}</option>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }}">{{ message }}</div>
         {% endfor %}
-      </select>
-    </div>
+      {% endif %}
+    {% endwith %}
 
-    <div class="form-group">
-      <label>Upload Photo:</label>
-      <input type="file" name="image" class="form-control-file">
-    </div>
+    <form method="POST" action="/visitor_form" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" name="name" class="form-control" required>
+      </div>
 
-    <div class="form-group">
-      <label>Or Capture with Webcam:</label><br>
-      <button type="button" class="btn btn-secondary" onclick="startCamera()">Start Camera</button>
-      <button type="button" class="btn btn-info" onclick="takeSnapshot()">Take Snapshot</button>
-    </div>
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" name="email" class="form-control" required>
+      </div>
 
-    <video id="video" autoplay playsinline></video>
-    <canvas id="canvas" style="display: none;"></canvas>
-    <input type="hidden" name="webcam_image" id="webcam_image">
+      <div class="form-group">
+        <label for="phone">Phone:</label>
+        <input type="text" name="phone" class="form-control" required>
+      </div>
 
-    <div class="form-group text-center">
-      <button type="submit" class="btn btn-success">Register Visitor</button>
-    </div>
-  </form>
+      <div class="form-group">
+        <label for="visit_reason">Purpose of Visit:</label>
+        <input type="text" name="visit_reason" class="form-control" required>
+      </div>
 
+      <div class="form-group">
+        <label for="employee_id">Employee:</label>
+        <select name="employee_id" class="form-control" required>
+          {% for emp in employees %}
+            <option value="{{ emp.id }}">{{ emp.name }} ({{ emp.designation }})</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Webcam Section -->
+      <div class="form-group text-center">
+        <label><strong>Take Visitor Photo:</strong></label>
+        <div class="capture-box">
+          <video id="video" autoplay></video>
+          <canvas id="canvas" style="display:none;"></canvas>
+          <img id="capturedImage" style="display:none;" />
+          <button type="button" class="btn btn-primary" onclick="capturePhoto()">Capture Photo</button>
+        </div>
+      </div>
+
+      <!-- Hidden input -->
+      <input type="hidden" id="photoInput" name="photo">
+
+      <!-- Submit -->
+      <div class="form-group text-center">
+        <button type="button" class="btn btn-success" onclick="submitForm()">Register Visitor</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    let video = document.getElementById('video');
-    let canvas = document.getElementById('canvas');
-    let webcamImage = document.getElementById('webcam_image');
+    const video = document.querySelector("#video");
+    const canvas = document.querySelector("#canvas");
+    const capturedImage = document.querySelector("#capturedImage");
+    const photoInput = document.querySelector("#photoInput");
     let stream = null;
 
-    function startCamera() {
-      navigator.mediaDevices.getUserMedia({ video: true })
-        .then(s => {
-          stream = s;
-          video.srcObject = stream;
-        })
-        .catch(err => alert("Camera access denied: " + err));
-    }
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(s => {
+        stream = s;
+        video.srcObject = stream;
+      })
+      .catch(err => {
+        console.error("Webcam error:", err);
+        alert("Could not access webcam. Please allow camera permission.");
+      });
 
-    function takeSnapshot() {
-      if (!stream) return;
-      const context = canvas.getContext('2d');
+    function capturePhoto() {
+      if (!stream) {
+        alert("Webcam not initialized.");
+        return;
+      }
+
+      const ctx = canvas.getContext("2d");
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const imageData = canvas.toDataURL('image/png');
-      webcamImage.value = imageData;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      stream.getTracks().forEach(track => track.stop());
-      video.srcObject = null;
+      canvas.toBlob(blob => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          photoInput.value = reader.result;
+          capturedImage.src = reader.result;
+          capturedImage.style.display = "block";
+          video.style.display = "none"; // hide video after capture
+          stopWebcam();
+          Swal.fire("Captured!", "Photo has been taken.", "success");
+        };
+        reader.readAsDataURL(blob);
+      }, "image/png");
+    }
+
+    function stopWebcam() {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+        video.srcObject = null;
+      }
+    }
+
+    function submitForm() {
+      if (!photoInput.value) {
+        Swal.fire("Hold on!", "Please capture a photo before submitting.", "warning");
+        return;
+      }
+      document.querySelector("form").submit();
     }
   </script>
 </body>

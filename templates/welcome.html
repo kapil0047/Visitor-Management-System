@@ -2,18 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Welcome | Pyrotech Visit</title>
+  <title>Welcome</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/welcome.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
+  <div class="background-animation"></div>
+
   <div class="container">
     <div class="glass-card">
-      <h1>Welcome to <span>Pyrotech Visit</span></h1>
-      <p>Smart & Secure Visitor Management</p>
+      <img src="https://www.automation.com/getmedia/cd0e4f90-62d8-4dbc-82ce-abcb3c033434/pyrotech-logo" alt="Pyrotech Logo" class="logo">
+      <h1>Welcome to <span>Pyrotech Visitor Management</span></h1>
+      <p>Manage, monitor, and streamline all visitor interactions securely.</p>
       <div class="buttons">
-        <a href="{{ url_for('visitor_form') }}">Visitor Check‑In</a>
-        <a href="{{ url_for('admin_login') }}">Admin Panel</a>
-
+        <a href="/visitor_form" class="btn"><i class="fas fa-user-plus"></i> Register Visitor</a>
+        <a href="/adminlogin" class="btn"><i class="fas fa-user-shield"></i> Admin Login</a>
       </div>
     </div>
   </div>

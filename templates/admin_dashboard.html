@@ -1,27 +1,131 @@
+<!-- Use this full code in your admin template -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Visitor Logs</title>
+  <title>Admin Dashboard - Visitor Logs</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
   <style>
-    body { background: #f0f4fb; }
-    thead { background: #0056b3; color: #fff; }
-    .btn-export { background: #007bff; color: #fff; }
+    body {
+      background: linear-gradient(to right, #002f5d, #5ea6e9);
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    thead {
+      background-color: #0056b3;
+      color: white;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn {
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .btn-outline-light {
+      background-color: #ffffff;
+      color: #002f5d;
+      border: none;
+    }
+
+    .btn-outline-light:hover {
+      background-color: #4c94d4;
+      color: white;
+    }
+
+    .btn-export {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .btn-export:hover {
+      background-color: #218838;
+    }
+
+    .btn-delete-selected, .btn-danger {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .btn-delete-selected:hover, .btn-danger:hover {
+      background-color: #5a6268;
+    }
+
+    .form-check-input {
+      margin-top: 0.6rem;
+    }
+
+    td:last-child {
+      min-width: 160px;
+    }
+
+    td:last-child .btn {
+      margin: 2px;
+      font-size: 0.8rem;
+      padding: 4px 8px;
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+    }
+
+    @media print {
+      @page {
+        size: landscape;
+        margin: 10mm;
+      }
+
+      body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .no-print {
+        display: none !important;
+      }
+
+      .table-responsive {
+        overflow: visible !important;
+      }
+
+      table {
+        width: 100% !important;
+        font-size: 12px;
+        border-collapse: collapse;
+      }
+
+      th, td {
+        padding: 6px 10px;
+        border: 1px solid #ccc;
+        word-break: break-word;
+      }
+
+      img {
+        max-width: 100px;
+        height: auto;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h2>Visitor Logs</h2>
-      <div>
-        <a href="{{ url_for('welcome') }}" class="btn btn-link">← Home</a>
-        <a href="{{ url_for('export_excel') }}" class="btn btn-export me-2">Export to Excel</a>
-        <button onclick="window.print()" class="btn btn-secondary">Print as PDF</button>
-      </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="text-white fw-bold">Visitor Logs</h2>
     </div>
 
-    <div class="row mb-3 g-2">
+    <!-- Filters & Buttons -->
+    <div class="row g-3 align-items-end mb-3 no-print">
       <div class="col-md-4">
         <input id="searchInput" type="text" class="form-control" placeholder="Search name or phone…">
       </div>
@@ -33,20 +137,36 @@
           {% endfor %}
         </select>
       </div>
+      <div class="col-md-12">
+        <div class="d-flex flex-wrap gap-2 justify-content-between justify-content-md-end">
+          <a href="{{ url_for('export_excel') }}" class="btn btn-export">Export to Excel</a>
+          <button class="btn btn-outline-light" onclick="printLogs()">Print as PDF</button>
+          <a href="{{ url_for('add_employee') }}" class="btn btn-outline-light">Add Employee</a>
+          {% if current_admin and current_admin.is_superadmin %}
+          <a href="/create_admin" class="btn btn-outline-light">Create Admin</a>
+          {% endif %}
+          <button class="btn btn-delete-selected" onclick="deleteSelected()">Delete Selected</button>
+          <button class="btn btn-danger" onclick="confirmDelete()">Delete All</button>
+          <a class="btn" href="{{ url_for('welcome') }}" class="btn btn-outline-light" >🏠 Back to Home</a>
+        </div>
+      </div>
     </div>
-
-    <div class="table-responsive">
-      <table id="visitorTable" class="table table-striped table-bordered text-center">
+s
+    <!-- Logs Table -->
+    <div class="glass-card table-responsive">
+      <table id="visitorTable" class="table table-striped table-bordered align-middle text-center">
         <thead>
           <tr>
+            <th><input type="checkbox" id="selectAll" class="form-check-input"></th>
             <th>#</th><th>Name</th><th>Email</th><th>Phone</th>
             <th>Employee</th><th>Designation</th><th>Reason</th><th>Photo</th>
             <th>Check‑In</th><th>Check‑Out</th><th>Actions</th>
           </tr>
         </thead>
         <tbody>
-        {% for v in visitors %}
-          <tr>
+          {% for v in visitors %}
+          <tr data-id="{{ v.id }}">
+            <td><input type="checkbox" class="form-check-input row-checkbox"></td>
             <td>{{ loop.index }}</td>
             <td>{{ v.name }}</td>
             <td>{{ v.email or '—' }}</td>
@@ -55,51 +175,152 @@
             <td>{{ v.employee.designation if v.employee else '—' }}</td>
             <td>{{ v.visit_reason or '—' }}</td>
             <td>
-              {% if v.photo %}
-                <img src="{{ url_for('static','uploads/'+v.photo) }}"
-                     width="50" height="50" class="rounded-circle">
-              {% else %}
-                N/A
-              {% endif %}
+              <img src="{{ url_for('static', filename='uploads/' ~ v.photo) if v.photo else url_for('static', filename='uploads/default.jpg') }}"
+                   alt="Visitor Photo" width="80" class="img-thumbnail">
             </td>
             <td>{{ v.checkin_str }}</td>
             <td>{{ v.checkout_str or '—' }}</td>
             <td>
-              <a href="{{ url_for('edit_visitor', id=v.id) }}"
-                 class="btn btn-sm btn-primary">Edit</a>
+              <a href="{{ url_for('edit_visitor', visitor_id=v.id) }}" class="btn btn-sm btn-primary">Edit</a>
               {% if not v.checkout %}
-                <form method="POST" action="{{ url_for('checkout_visitor', visitor_id=v.id) }}"
-                      class="d-inline">
-                  <button class="btn btn-sm btn-warning">Check Out</button>
-                </form>
+              <form method="POST" action="{{ url_for('checkout_visitor', visitor_id=v.id) }}" class="d-inline">
+                <button class="btn btn-sm btn-warning">Check Out</button>
+              </form>
               {% else %}
-                <span class="badge bg-success">Done</span>
+              <span class="badge bg-success">Done</span>
               {% endif %}
             </td>
           </tr>
-        {% endfor %}
+          {% endfor %}
         </tbody>
       </table>
     </div>
   </div>
 
   <script>
-    const rows = [...document.querySelectorAll('#visitorTable tbody tr')];
-    document.getElementById('searchInput').oninput = e => {
-      const q = e.target.value.toLowerCase();
-      rows.forEach(r => {
-        const name = r.cells[1].innerText.toLowerCase(),
-              phone= r.cells[3].innerText.toLowerCase();
-        r.style.display = (name.includes(q)|| phone.includes(q))?'':'none';
+    function printLogs() {
+      const tableContainer = document.querySelector('.table-responsive');
+      const clonedTable = tableContainer.cloneNode(true);
+
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Visitor Logs - ${new Date().toLocaleDateString()}</title>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+            <style>
+              @page { size: landscape; margin: 20px; }
+              body {
+                font-family: 'Segoe UI', sans-serif;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                padding: 20px;
+                background: white;
+              }
+              h2 {
+                text-align: center;
+                margin-bottom: 20px;
+              }
+              table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 12px;
+              }
+              th, td {
+                border: 1px solid #ccc !important;
+                padding: 8px !important;
+                word-break: break-word;
+                vertical-align: middle !important;
+                text-align: center;
+              }
+              img {
+                max-width: 80px;
+                height: auto;
+                border-radius: 4px;
+              }
+              th:last-child, td:last-child {
+                display: none;
+              }
+            </style>
+          </head>
+          <body>
+            <h2>Visitor Logs</h2>
+            ${clonedTable.outerHTML}
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+    }
+    
+  function deleteSelected() {
+    const selectedIds = [];
+    document.querySelectorAll('.row-checkbox:checked').forEach(cb => {
+      const row = cb.closest('tr');
+      selectedIds.push(row.getAttribute('data-id'));
+    });
+
+    if (selectedIds.length === 0) {
+      alert("Please select at least one visitor to delete.");
+      return;
+    }
+
+    if (!confirm("Are you sure you want to delete the selected visitors?")) return;
+
+    fetch('/delete_selected_logs', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ ids: selectedIds })
+    }).then(response => {
+      if (response.ok) location.reload();
+      else alert("Failed to delete.");
+    });
+  }
+
+  function confirmDelete() {
+    if (confirm("Are you sure you want to delete ALL visitors? This action cannot be undone.")) {
+      fetch('/delete_logs', {
+        method: 'POST'
+      }).then(response => {
+        if (response.ok) location.reload();
+        else alert("Failed to delete all.");
       });
-    };
-    document.getElementById('employeeFilter').onchange = e => {
-      const emp = e.target.value.toLowerCase();
-      rows.forEach(r => {
-        const cell = r.cells[4].innerText.toLowerCase();
-        r.style.display = (!emp || cell===emp)?'':'none';
-      });
-    };
+    }
+  }
+  const searchInput = document.getElementById("searchInput");
+  const employeeFilter = document.getElementById("employeeFilter");
+  const rows = document.querySelectorAll("#visitorTable tbody tr");
+
+  function filterTable() {
+  const searchTerm = searchInput.value.toLowerCase();
+  const selectedEmployee = employeeFilter.value;
+
+  rows.forEach(row => {
+    const name = row.children[2].textContent.toLowerCase();    // Name column
+    const phone = row.children[4].textContent.toLowerCase();   // Phone column
+    const employee = row.children[5].textContent.trim();       // Corrected column index for employee name
+
+    const matchesSearch = name.includes(searchTerm) || phone.includes(searchTerm);
+    const matchesEmployee = selectedEmployee === "" || employee === selectedEmployee;
+
+    if (matchesSearch && matchesEmployee) {
+      row.style.display = "";
+    } else {
+      row.style.display = "none";
+    }
+  });
+}
+
+  // Listen to search input and employee dropdown
+  searchInput.addEventListener("keyup", filterTable);
+  employeeFilter.addEventListener("change", filterTable);
+</script>
+
+</script>
+
   </script>
 </body>
 </html>

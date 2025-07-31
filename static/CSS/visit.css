@@ -1,74 +1,119 @@
+/* General Body Styling */
 body {
+  background-color: #f0f4f8;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
-  padding: 0;
-  height: 100vh;
-  background: linear-gradient(to right, #002f5d, #5ea6e9);
-  font-family: 'Segoe UI', sans-serif;
+  padding: 40px 0;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  min-height: 100vh;
 }
 
-.container {
-  width: 100%;
-  max-width: 600px;
-  padding: 20px;
-}
-
-.glass-card {
-  background: rgba(20, 40, 80, 0.4);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 40px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-  color: #e6f0ff;
+/* Pass Container */
+.pass-container,
+.pass-card {
+  background: rgba(189, 197, 234, 0.95);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  padding: 30px 40px;
+  max-width: 500px;
+  width: 95%;
   text-align: center;
+  position: relative;
 }
 
-h2 {
-  margin-bottom: 30px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-  text-align: left;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: 600;
-  color: #d9ecff;
-}
-
-.form-group input,
-.form-group select {
-  width: 100%;
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  background: #f0f4ff;
-  color: #002f5d;
-  font-size: 16px;
-}
-
-.btn {
-  background-color: #ffffff;
-  color: #002f5d;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background 0.3s ease;
-}
-
-.btn:hover {
-  background-color: #4c94d4;
+/* Header / Check-in Box */
+.pass-heading-box,
+.header-box {
+  background-color: #004080;
   color: white;
-}
-.scroll-form {
-  max-height: 90vh;
-  overflow-y: auto;
+  font-size: 18px;
+  font-weight: bold;
   padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+/* Visitor Photo */
+.pass-photo,
+.photo img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  border: 2px solid #004080;
+}
+
+/* Labels & Values */
+.pass-label,
+.label {
+  font-size: 16px;
+  font-weight: bold;
+  color: #004080;
+  margin: 8px 0 4px;
+}
+
+.pass-value,
+.value {
+  font-size: 15px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* Footer Message */
+.pass-footer,
+.thank-you {
+  margin-top: 25px;
+  font-weight: 600;
+  color: #004080;
+  font-style: italic;
+  font-size: 15px;
+}
+
+/* Button Container */
+.pass-buttons,
+.buttons {
+  margin-top: 30px;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Buttons */
+.pass-buttons button,
+.buttons button,
+button,
+.btn {
+  background-color: #004080;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  text-decoration: none;
+}
+
+.pass-buttons button:hover,
+.buttons button:hover,
+button:hover,
+.btn:hover {
+  background-color: #003366;
+}
+
+/* Print View */
+@media print {
+  body {
+    background: white !important;
+  }
+
+  .pass-buttons,
+  .buttons {
+    display: none;
+  }
 }

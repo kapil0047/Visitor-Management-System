@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Visitor Pass PDF</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        h2 {
+            text-align: center;
+            color: #004080;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .pass-wrapper {
+            border: 2px solid #004080;
+            padding: 20px;
+            width: 400px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f9f9f9;
+        }
+
+        .left {
+            flex: 1;
+            padding-right: 10px;
+        }
+
+        .left p {
+            margin: 6px 0;
+            font-size: 14px;
+        }
+
+        .left strong {
+            color: #004080;
+            display: inline-block;
+            width: 75px;
+        }
+
+        .left span {
+            color: #69a9ff;
+        }
+
+        .right img {
+            width: 110px;
+            height: 130px;
+            object-fit: cover;
+            border: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Visitor Check-in Successful</h2>
+
+        <div class="pass-wrapper">
+            <div class="left">
+                <p><strong>Name:</strong> <span>{{ visitor.name }}</span></p>
+                <p><strong>Status:</strong> <span>Approved</span></p>
+                <p><strong>To Meet:</strong> <span>{{ visitor.employee.name if visitor.employee else 'N/A' }}</span></p>
+            </div>
+            <div class="right">
+                {% if visitor.photo %}
+                    <img src="{{ url_for('static', filename='uploads/' + visitor.photo, _external=True) }}" alt="Visitor Photo">
+                {% else %}
+                    <p>No Photo</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,83 +1,105 @@
+/* Background styling */
 body {
-  margin: 0;
-  padding: 0;
-  height: 100vh;
-  background: linear-gradient(to right, #002f5d, #5ea6e9);
-  font-family: 'Segoe UI', sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    background: url('/static/images/bg.jpg') no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
 }
 
-.container {
-  width: 100%;
-  max-width: 400px;
-  padding: 20px;
+/* Glassmorphism Container */
+.login-container {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 25px 25px; /* reduced padding */
+    width: 370px;
+    color: rgb(77, 119, 190);
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.3);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.glass-card {
-  background: rgba(20, 40, 80, 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 20px;
-  padding: 40px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
-  color: #e6f0ff;
-  text-align: center;
+/* Login Heading Section */
+.login-header {
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-h2 {
-  margin-bottom: 30px;
+.login-header h1 {
+    font-size: 26px;
+    margin: 0;
+    color: #3e4eb8;
+    font-weight: 600;
+    letter-spacing: 1px;
 }
 
-.input-group {
-  margin-bottom: 20px;
-  text-align: left;
+.login-header p {
+    font-size: 18px;
+    margin-top: 6px;
+    color: #5a92f2;
+    font-weight: 500;
 }
 
-.input-group label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: 600;
-  color: #d9ecff;
+/* Input fields */
+.login-container input {
+    width: 100%;
+    padding: 14px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: none;
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+    font-size: 16px;
+    outline: none;
+    box-sizing: border-box;
 }
 
-.input-group input {
-  width: 100%;
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  background: #f0f4ff;
-  color: #002f5d;
-  font-size: 16px;
+.login-container input::placeholder {
+    color: #dddddd;
 }
 
-.btn {
-  background-color: #ffffff;
-  color: #002f5d;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background 0.3s ease;
+/* Login Button */
+.login-container button {
+    width: 100%;
+    padding: 14px; /* matched input height */
+    margin-top: 10px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(to right, #3a7bd5, #00d2ff);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
 }
 
-.btn:hover {
-  background-color: #4c94d4;
-  color: white;
+.login-container button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 123, 255, 0.6);
 }
 
-.links {
-  margin-top: 15px;
+/* Flash messages */
+.flash {
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-weight: bold;
+    font-size: 15px;
 }
 
-.links a {
-  color: #d9ecff;
-  text-decoration: none;
-  font-size: 14px;
+.flash.success {
+    background-color: rgba(40, 167, 69, 0.8);
+    color: white;
 }
 
-.links a:hover {
-  text-decoration: underline;
+.flash.error {
+    background-color: rgba(220, 53, 69, 0.8);
+    color: white;
 }

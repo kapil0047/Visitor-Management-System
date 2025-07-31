@@ -1,3 +1,4 @@
+/* Basic Layout */
 body {
     font-family: 'Segoe UI', sans-serif;
     background-color: #f8f9fa;
@@ -5,12 +6,14 @@ body {
     color: #333;
 }
 
+/* Header Layout */
 .admin-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
+/* Buttons */
 .admin-buttons .btn {
     background-color: #007bff;
     color: #fff;
@@ -19,12 +22,14 @@ body {
     border: none;
     border-radius: 5px;
     text-decoration: none;
+    transition: background-color 0.3s ease;
 }
 
 .admin-buttons .btn:hover {
     background-color: #0056b3;
 }
 
+/* Filters */
 .admin-filters {
     margin-top: 20px;
     margin-bottom: 10px;
@@ -38,24 +43,176 @@ body {
     border-radius: 4px;
 }
 
+/* Table Styling */
 .admin-table table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
+    table-layout: fixed; /* Keeps column widths consistent */
 }
 
-.admin-table th, .admin-table td {
+.admin-table th,
+.admin-table td {
     border: 1px solid #ccc;
     padding: 10px;
     text-align: center;
+    word-wrap: break-word;
 }
 
+/* Header Styling */
 .admin-table th {
     background-color: #007bff;
     color: white;
 }
 
+/* Wider Action Column */
+.admin-table th.action-column,
+.admin-table td.action-column {
+    width: 170px;
+}
+
+/* Status Labels */
 .checked-out-label {
     color: green;
     font-weight: bold;
+}
+
+/* Print-Friendly Styling */
+@media print {
+    body {
+        background: white;
+        color: black;
+        padding: 0;
+        margin: 0;
+    }
+
+    .admin-header,
+    .admin-buttons,
+    .admin-filters {
+        display: none;
+    }
+
+    .admin-table table {
+        width: 100%;
+        font-size: 12px;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        padding: 6px;
+        border: 1px solid #333;
+    }
+}
+<style>
+  body {
+    background: linear-gradient(to right, #002f5d, #5ea6e9);
+  }
+
+  .glass-card {
+    background: rgba(20, 40, 80, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    color: #e6f0ff;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  }
+
+  .btn {
+    border-radius: 8px;
+    font-weight: 600;
+  }
+
+  .btn-outline-light {
+    background-color: #ffffff;
+    color: #002f5d;
+    border: none;
+  }
+
+  .btn-outline-light:hover {
+    background-color: #4c94d4;
+    color: white;
+  }
+
+  .btn-export {
+    background-color: #28a745;
+    color: white;
+  }
+
+  .btn-export:hover {
+    background-color: #218838;
+  }
+
+  .btn-delete-selected {
+    background-color: #dc3545;
+    color: white;
+  }
+
+  .card.table-responsive {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    padding: 20px;
+  }
+</style>
+.action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+    justify-content: flex-start;
+}
+
+.action-buttons a,
+.action-buttons button {
+    background-color: #007bff; /* Primary glassy blue */
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.action-buttons a:hover,
+.action-buttons button:hover {
+    background-color: #0056b3;
+    box-shadow: 0 4px 12px rgba(0, 86, 179, 0.4);
+}
+.visitor-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.visitor-table th, .visitor-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.visitor-table th {
+    background-color: rgba(0, 123, 255, 0.2);
+    font-weight: bold;
+}
+.action-btn {
+    padding: 8px 12px;
+    margin: 4px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    transition: background 0.3s ease;
+}
+
+.action-btn:hover {
+    background-color: #0056b3;
 }

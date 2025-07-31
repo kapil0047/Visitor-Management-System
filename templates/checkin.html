@@ -1,60 +1,39 @@
-from flask import Flask, render_template, request, redirect
-import psycopg2
-import os
-from datetime import datetime
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Visitor Check-In</title>
+</head>
+<body>
+    <h1>Visitor Check-In</h1>
+    <form action="/submit" method="POST">
+        <label>Name:</label><br>
+        <input type="text" name="name" required><br>
 
-app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
+        <label>Email:</label><br>
+        <input type="email" name="email" required><br>
 
-# Connect to PostgreSQL
-def get_db_connection():
-    return psycopg2.connect(
-        dbname='visitor_db',
-        user='postgres',
-        password='your_password',  # replace with your password
-        host='localhost',
-        port='5432'
-    )
+        <label>Phone:</label><br>
+        <input type="text" name="phone" required><br>
 
-@app.route('/')
-def welcome():
-    return render_template('welcome.html')
+        <label>Purpose:</label><br>
+        <textarea name="purpose" required></textarea><br>
 
-@app.route('/checkin', methods=['GET', 'POST'])
-def checkin():
-    conn = get_db_connection()
-    cur = conn.cursor()
+        <!-- checkin.html -->
+<form method="POST">
+    <!-- other input fields -->
+    <label for="employee_id">Employee to Meet:</label>
+    <select name="employee_id" required>
+        <option disabled selected value="">-- Select Employee --</option>
+        {% for emp in employees %}
+        <option value="{{ emp[0] }}">{{ emp[1] }} - {{ emp[2] }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Check-In</button>
+</form>
 
-    if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
-        phone = request.form['phone']
-        purpose = request.form['purpose']
-        employee_id = request.form['employee_id']
 
-        photo = request.files['photo']
-        if photo:
-            photo_path = os.path.join(app.config['UPLOAD_FOLDER'], photo.filename)
-            photo.save(photo_path)
-        else:
-            photo_path = None
-
-        cur.execute("""
-            INSERT INTO visitor (name, email, phone, purpose, photo, employee_id, checkin)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
-        """, (name, email, phone, purpose, photo_path, employee_id, datetime.now()))
-
-        conn.commit()
-        cur.close()
-        conn.close()
-        return render_template('success.html', message="Check-in successful!")
-
-    # Fetch employees for dropdown
-    cur.execute("SELECT id, name FROM employee")
-    employees = cur.fetchall()
-    cur.close()
-    conn.close()
-    return render_template('checkin.html', employees=employees)
-
-if __name__ == '__main__':
-    app.run(debug=True)
+        <button type="submit">Submit</button>
+    </form>
+    
+</body>
+</html>

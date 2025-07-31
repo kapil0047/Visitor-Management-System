@@ -1,0 +1,50 @@
+body {
+    background: linear-gradient(135deg, #3a82ca, #0c4986, #125ebc);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #fff;
+}
+
+.glass-box {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.glass-box h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #ffffff;
+}
+
+.glass-box label {
+    color: #d1d1d1;
+}
+
+.glass-box .form-control {
+    background-color: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+}
+
+.glass-box .form-control::placeholder {
+    color: #cccccc;
+}
+
+.glass-box .btn-success {
+    width: 100%;
+    background-color: #1e90ff;
+    border: none;
+    font-weight: bold;
+}
+
+.glass-box .btn-success:hover {
+    background-color: #187bcd;
+}

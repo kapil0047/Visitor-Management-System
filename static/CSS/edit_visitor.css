@@ -1,0 +1,61 @@
+/* static/css/edit_visitor.css */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(135deg, #3575dd, #1f2ed3);
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.glass-container {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  padding: 30px;
+  width: 400px;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-container h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+label {
+  font-weight: 500;
+}
+
+input.form-control {
+  background-color: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #fff;
+}
+
+input.form-control:focus {
+  background-color: rgba(255, 255, 255, 0.3);
+  color: #000;
+}
+
+.btn-primary,
+.btn-secondary {
+  width: 48%;
+  font-weight: bold;
+  border-radius: 10px;
+}
+
+.btn-primary {
+  background-color: #1e90ff;
+  border: none;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  border: none;
+}
