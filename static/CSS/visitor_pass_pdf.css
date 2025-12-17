@@ -1,0 +1,66 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.pass-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.pass-card {
+  background: #ffffff;
+  border: 2px solid #004080;
+  border-radius: 12px;
+  width: 350px;
+  padding: 20px;
+  text-align: center;
+}
+
+.pass-card h2 {
+  font-size: 18px;
+  margin-bottom: 12px;
+  color: #004080;
+}
+
+.photo img {
+  width: 100px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 10px 0;
+}
+
+.details {
+  margin: 10px 0;
+  text-align: left;
+  font-size: 14px;
+}
+
+.details p {
+  margin: 4px 0;
+}
+
+.label {
+  font-weight: bold;
+  color: #004080;
+}
+
+.value {
+  color: #333;
+}
+
+.qrcode img {
+  width: 120px;
+  height: 120px;
+  margin: 10px 0;
+}
+
+.thank-you {
+  margin-top: 12px;
+  font-style: italic;
+  color: #004080;
+}

@@ -1,30 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Admin Login</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+  <meta charset="UTF-8">
+  <title>Admin Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-header">
-            <h1>Pyrotech Visitor Panel</h1>
-            <p>Admin Login</p>
-        </div>
+  <div class="background-animation"></div>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="flash {{ category }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <form method="POST">
-            <input type="text" name="username" placeholder="Enter Admin Username" required>
-            <input type="password" name="password" placeholder="Enter Password" required>
-            <button type="submit">Login</button>
-        </form>
+  <div class="login-container">
+    <div class="login-header">
+        <img src="https://www.automation.com/getmedia/cd0e4f90-62d8-4dbc-82ce-abcb3c033434/pyrotech-logo" alt="Pyrotech Logo" class="logo">
+        <h1>Pyrotech Visitor Panel</h1>
+        <p><i class="fas fa-user-shield"></i> Admin Login</p>
     </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+      <input type="text" name="username" placeholder="Enter Admin Username" required>
+      <input type="password" name="password" placeholder="Enter Password" required>
+      <button type="submit"><i class="fas fa-sign-in-alt"></i> Login</button>
+    </form>
+  </div>
 </body>
 </html>

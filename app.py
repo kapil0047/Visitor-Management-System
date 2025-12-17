@@ -7,7 +7,7 @@ from flask_migrate import Migrate
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.orm import joinedload
-
+from werkzeug.exceptions import RequestEntityTooLarge
 import os
 import io
 import base64
@@ -20,12 +20,17 @@ from io import BytesIO
 from flask import render_template, make_response
 from xhtml2pdf import pisa
 import io
+from weasyprint import HTML, CSS
+import tempfile
 from models import db, Admin, Employee, Visitor
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 from flask import jsonify
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import qrcode
+import os
+from flask import url_for
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -41,11 +46,11 @@ app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'default_fallback_secret_key')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB limit
+app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 1024  # 16 MB limit
 app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER', 'static/uploads/')
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 migrate = Migrate(app, db)
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  
+app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 1024  
 from datetime import timedelta
 
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
@@ -86,6 +91,11 @@ def send_notification_email(to_email, visitor_name, visit_reason):
         print("❌ Email sending failed:", e)
 import os
 from flask import current_app
+
+@app.errorhandler(413)
+def request_entity_too_large(error):
+    flash("Uploaded file is too large. Please upload a file smaller than 64MB.", "error")
+    return redirect(request.url)
 
 def link_callback(uri, rel):
     if uri.startswith('/static/'):
@@ -136,23 +146,24 @@ def visitor_form():
     employees = Employee.query.all()
 
     if request.method == 'POST':
+        # 1. Collect data
         name = request.form.get('name', '').strip()
         email = request.form.get('email', '').strip()
         phone = request.form.get('phone', '').strip()
         visit_reason = request.form.get('visit_reason', '').strip()
         employee_id = request.form.get('employee_id', '').strip()
 
-        # ✅ Server-side validation
+        # Validation
         if not name or not email or not phone or not visit_reason or not employee_id:
             flash("All fields are required.", "error")
             return redirect(url_for('visitor_form'))
 
-        webcam_data = request.form.get('photo')  # Base64 data
-        uploaded_file = request.files.get('image')  # File from input
-
+        # 2. Handle uploaded/captured image
+        webcam_data = request.form.get('capturedPhoto')   # <-- from hidden input
+        uploaded_file = request.files.get('photoUpload')  # <-- from <input type="file">
         filename = None
 
-        if webcam_data:
+        if webcam_data:  # ✅ If webcam photo was taken
             try:
                 header, encoded = webcam_data.split(",", 1)
                 image_data = base64.b64decode(encoded)
@@ -162,10 +173,11 @@ def visitor_form():
             except Exception as e:
                 print("Webcam capture failed:", e)
 
-        elif uploaded_file and uploaded_file.filename:
+        elif uploaded_file and uploaded_file.filename:  # ✅ If uploaded
             filename = secure_filename(uploaded_file.filename)
             uploaded_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
+        # 3. Save Visitor
         new_visitor = Visitor(
             name=name,
             email=email,
@@ -174,11 +186,26 @@ def visitor_form():
             employee_id=employee_id,
             photo=filename
         )
-
         db.session.add(new_visitor)
         db.session.commit()
 
-        # ✅ Send email to selected employee
+        # 4. Generate QR code
+        qr_data = f"VisitorID:{new_visitor.id}|Name:{new_visitor.name}|Purpose:{new_visitor.visit_reason}"
+        qr = qrcode.QRCode(version=1, box_size=10, border=5)
+        qr.add_data(qr_data)
+        qr.make(fit=True)
+
+        img = qr.make_image(fill_color="black", back_color="white")
+        qr_folder = os.path.join("static", "qrcodes")
+        os.makedirs(qr_folder, exist_ok=True)
+        qr_filename = f"{new_visitor.id}.png"
+        img.save(os.path.join(qr_folder, qr_filename))
+
+        # Save QR code in DB
+        new_visitor.qr_code = qr_filename
+        db.session.commit()
+
+        # 5. Send email to employee
         emp = Employee.query.get(employee_id)
         if emp and emp.email:
             send_notification_email(emp.email, name, visit_reason)
@@ -188,11 +215,33 @@ def visitor_form():
     return render_template('visitor_form.html', employees=employees)
 
 
-
 @app.route('/success')
 def success():
     return "✅ Visitor registered successfully."
 
+from flask import Flask, render_template, request, jsonify
+
+# --- Chatbot Route ---
+@app.route("/chatbot", methods=["POST"])
+def chatbot():
+    data = request.get_json()
+    user_msg = data.get("message", "").lower()
+
+    # Simple rule-based responses
+    if "hello" in user_msg or "hi" in user_msg:
+        reply = "Hello! 👋 How can I help you today?"
+    elif "register" in user_msg:
+        reply = "You can register a new visitor on the Visitor Registration page."
+    elif "pass" in user_msg or "pdf" in user_msg:
+        reply = "Visitor passes are automatically generated after registration. You can download or print them."
+    elif "login" in user_msg:
+        reply = "Admins can log in from the login page using their credentials."
+    elif "contact" in user_msg:
+        reply = "For support, please contact the IT team at Pyrotech."
+    else:
+        reply = "Sorry, I didn't understand that 🤔. Please try asking differently."
+
+    return jsonify({"reply": reply})
 @app.route('/get_employees')
 def get_employees():
     employees = Employee.query.all()
@@ -304,24 +353,18 @@ def print_pdf():
     
     pdf.seek(0)
     return send_file(pdf, download_name="visitor_logs.pdf", as_attachment=True)
-from flask import make_response
-from xhtml2pdf import pisa
-import io
 
 @app.route('/visitor_pass_pdf/<int:visitor_id>')
 def visitor_pass_pdf(visitor_id):
     visitor = Visitor.query.get_or_404(visitor_id)
-    rendered = render_template("visitorpass_pdf.html", visitor=visitor)
+    rendered = render_template("visitor_pass.html", visitor=visitor, pdf_mode=True)
 
-    # Encode HTML properly for PDF rendering
-    pdf = io.BytesIO()
-    pisa_status = pisa.CreatePDF(io.BytesIO(rendered.encode("utf-8")), dest=pdf)
+    # Save temp PDF
+    pdf_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+    HTML(string=rendered, base_url=request.host_url).write_pdf(pdf_file.name)
 
-    if pisa_status.err:
-        return "PDF generation failed", 500
+    return send_file(pdf_file.name, download_name=f"{visitor.name}_VisitorPass.pdf", as_attachment=True)
 
-    pdf.seek(0)
-    return send_file(pdf, download_name=f"{visitor.name}_VisitorPass.pdf", as_attachment=True)
 
 @app.route('/adminlogin', methods=['GET', 'POST'])
 def admin_login():

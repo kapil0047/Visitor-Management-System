@@ -16,7 +16,7 @@
       background: rgba(255, 255, 255, 0.9);
       border-radius: 20px;
       padding: 50px 80px;
-      max-width: 2000px; /* Increased form width */
+      max-width: 800px;
       margin: 0 auto;
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
       backdrop-filter: blur(10px);
@@ -34,19 +34,31 @@
       color: #333;
     }
 
-    #video, #capturedImage {
-      width: 100%;
-      max-width: 300px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    .preview-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
     }
 
-    .capture-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      margin-top: 15px;
+    video, img {
+      width: 200px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 2px solid #ccc;
+    }
+
+    .capture-btn {
+      background: #007bff;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .capture-btn:hover {
+      background: #0056b3;
     }
 
     .btn-primary, .btn-success {
@@ -79,28 +91,33 @@
     {% endwith %}
 
     <form method="POST" action="/visitor_form" enctype="multipart/form-data">
+      <!-- Name -->
       <div class="form-group">
-        <label for="name">Name:</label>
+        <label>Name:</label>
         <input type="text" name="name" class="form-control" required>
       </div>
 
+      <!-- Email -->
       <div class="form-group">
-        <label for="email">Email:</label>
+        <label>Email:</label>
         <input type="email" name="email" class="form-control" required>
       </div>
 
+      <!-- Phone -->
       <div class="form-group">
-        <label for="phone">Phone:</label>
+        <label>Phone:</label>
         <input type="text" name="phone" class="form-control" required>
       </div>
 
+      <!-- Purpose -->
       <div class="form-group">
-        <label for="visit_reason">Purpose of Visit:</label>
+        <label>Purpose of Visit:</label>
         <input type="text" name="visit_reason" class="form-control" required>
       </div>
 
+      <!-- Employee -->
       <div class="form-group">
-        <label for="employee_id">Employee:</label>
+        <label>Employee:</label>
         <select name="employee_id" class="form-control" required>
           {% for emp in employees %}
             <option value="{{ emp.id }}">{{ emp.name }} ({{ emp.designation }})</option>
@@ -108,86 +125,108 @@
         </select>
       </div>
 
-      <!-- Webcam Section -->
-      <div class="form-group text-center">
-        <label><strong>Take Visitor Photo:</strong></label>
-        <div class="capture-box">
-          <video id="video" autoplay></video>
-          <canvas id="canvas" style="display:none;"></canvas>
-          <img id="capturedImage" style="display:none;" />
-          <button type="button" class="btn btn-primary" onclick="capturePhoto()">Capture Photo</button>
+      <!-- Visitor Photo -->
+      <div class="form-group">
+        <label><strong>Visitor Photo:</strong></label>
+
+        <div class="preview-container">
+          <video id="video" autoplay playsinline></video>
+          <img id="photoPreview" style="display: none;" />
         </div>
+
+        <!-- Capture button -->
+        <button type="button" id="captureBtn" class="capture-btn">📸 Capture</button>
+
+        <p style="text-align:center; margin:10px 0;">OR</p>
+
+        <!-- Upload option -->
+        <input type="file" id="photoUpload" name="photoUpload" accept="image/*">
+
+        <!-- Hidden input to store base64 -->
+        <input type="hidden" id="capturedPhoto" name="capturedPhoto">
       </div>
 
-      <!-- Hidden input -->
-      <input type="hidden" id="photoInput" name="photo">
-
-      <!-- Submit -->
-      <div class="form-group text-center">
-        <button type="button" class="btn btn-success" onclick="submitForm()">Register Visitor</button>
+      <div class="text-center mt-4">
+        <button type="submit" class="btn btn-success">Register Visitor</button>
       </div>
     </form>
   </div>
 
   <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    const video = document.querySelector("#video");
-    const canvas = document.querySelector("#canvas");
-    const capturedImage = document.querySelector("#capturedImage");
-    const photoInput = document.querySelector("#photoInput");
-    let stream = null;
+    const video = document.getElementById('video');
+    const photoPreview = document.getElementById('photoPreview');
+    const captureBtn = document.getElementById('captureBtn');
+    const capturedPhotoInput = document.getElementById('capturedPhoto');
+    const fileInput = document.getElementById('photoUpload');
 
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(s => {
-        stream = s;
+    let stream;
+
+    // Start camera
+    async function startCamera() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true });
         video.srcObject = stream;
-      })
-      .catch(err => {
-        console.error("Webcam error:", err);
-        alert("Could not access webcam. Please allow camera permission.");
-      });
-
-    function capturePhoto() {
-      if (!stream) {
-        alert("Webcam not initialized.");
-        return;
+      } catch (err) {
+        console.error("Camera error:", err);
       }
+    }
 
-      const ctx = canvas.getContext("2d");
+    // Capture photo from webcam
+    captureBtn.addEventListener('click', () => {
+      const canvas = document.createElement('canvas');
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      canvas.getContext('2d').drawImage(video, 0, 0);
 
-      canvas.toBlob(blob => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          photoInput.value = reader.result;
-          capturedImage.src = reader.result;
-          capturedImage.style.display = "block";
-          video.style.display = "none"; // hide video after capture
-          stopWebcam();
-          Swal.fire("Captured!", "Photo has been taken.", "success");
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+
+      photoPreview.src = dataUrl;
+      photoPreview.style.display = 'block';
+      video.style.display = 'none';
+      capturedPhotoInput.value = dataUrl;
+
+      // Stop camera
+      if (stream) stream.getTracks().forEach(track => track.stop());
+    });
+
+    // File upload preview & resize
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const maxWidth = 300, maxHeight = 300;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          let { width, height } = img;
+          if (width > height && width > maxWidth) {
+            height *= maxWidth / width;
+            width = maxWidth;
+          } else if (height > maxHeight) {
+            width *= maxHeight / height;
+            height = maxHeight;
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+
+          const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          photoPreview.src = resizedDataUrl;
+          photoPreview.style.display = 'block';
+          video.style.display = 'none';
+          capturedPhotoInput.value = resizedDataUrl;
         };
-        reader.readAsDataURL(blob);
-      }, "image/png");
-    }
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
 
-    function stopWebcam() {
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-        stream = null;
-        video.srcObject = null;
-      }
-    }
-
-    function submitForm() {
-      if (!photoInput.value) {
-        Swal.fire("Hold on!", "Please capture a photo before submitting.", "warning");
-        return;
-      }
-      document.querySelector("form").submit();
-    }
+    // Start camera on load
+    startCamera();
   </script>
 </body>
 </html>

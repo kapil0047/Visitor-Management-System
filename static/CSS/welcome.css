@@ -1,97 +1,128 @@
-body {
+/* General Reset and Setup */
+body, html {
+  height: 100%;
   margin: 0;
-  padding: 0;
-  height: 100vh;
-  overflow: hidden;
   font-family: 'Segoe UI', sans-serif;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  background: #f4f7fa;
+  overflow: hidden;
   position: relative;
-  background: linear-gradient(120deg, #002f5d, #5ea6e9);
 }
 
-/* Animated background */
+/* Subtle Animated Background */
 .background-animation {
   position: absolute;
-  width: 200%;
-  height: 200%;
   top: -50%;
   left: -50%;
-  background: linear-gradient(45deg, #002f5d, #5ea6e9, #004080, #3c90e6);
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, #dbe9f4, #f6f9fc, #e0f2ff, #d7e3f3);
   background-size: 400% 400%;
-  animation: animateBG 15s ease infinite;
+  animation: animateBG 25s ease infinite;
   z-index: -1;
-  filter: blur(100px);
+  filter: blur(120px);
   opacity: 0.3;
 }
 
 @keyframes animateBG {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
+/* Centered container and animation */
 .container {
-  width: 100%;
-  max-width: 900px;
-  padding: 20px;
-}
-
-.glass-card {
-  background: rgba(20, 40, 80, 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 20px;
-  padding: 60px 40px;
-  text-align: center;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
-  color: #e6f0ff;
-}
-
-.glass-card h1 {
-  font-size: 32px;
-  margin-bottom: 10px;
-}
-
-.glass-card h1 span {
-  color: #ffffff;
-  font-weight: 600;
-}
-
-.glass-card p {
-  font-size: 18px;
-  margin-bottom: 40px;
-  color: #d9ecff;
-}
-
-/* Logo Styling */
-.logo {
-  width: 160px;
-  margin-bottom: 25px;
-  border-radius: 12px;
-  background-color: #fff;
-  padding: 6px 10px;
-}
-
-/* Button styling */
-.buttons .btn {
-  background-color: #ffffff;
-  color: #002f5d;
-  padding: 12px 24px;
-  margin: 0 10px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: 0.3s ease;
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  justify-content: center;
+  height: 100%;
+  animation: fadeInUp 1.2s ease-out forwards;
+  opacity: 0;
 }
 
-.buttons .btn:hover {
-  background-color: #4c94d4;
-  color: white;
-  transform: translateY(-2px);
+@keyframes fadeInUp {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Glass Card Style */
+.glass-card {
+  max-width: 900px;
+  width: 90%;
+  background: rgba(255, 255, 255, 0.28);
+  border-radius: 16px;
+  padding: 40px 50px;
+  text-align: center;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #1a2b4c;
+}
+
+/* Logo */
+.logo {
+  width: 120px;
+  margin-bottom: 20px;
+  animation: fadeInUp 1.4s ease-out forwards;
+}
+
+/* Title & Text */
+h1 {
+  font-size: 2.4rem;
+  margin: 10px 0;
+  color: #1a2b4c;
+}
+h1 span {
+  color: #0052cc;
+}
+p {
+  font-size: 1rem;
+  margin-bottom: 30px;
+  color: #3d4f69;
+}
+
+/* Buttons */
+.buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  background-color: #ffffff;
+  color: #1f3a93;
+  border: 1px solid #ccd9f0;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0, 82, 204, 0.1);
+}
+
+.btn i {
+  margin-right: 8px;
+}
+
+.btn:hover {
+  background-color: #1f3a93;
+  color: #fff;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(31, 58, 147, 0.3);
 }

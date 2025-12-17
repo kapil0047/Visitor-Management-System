@@ -3,42 +3,58 @@
 <head>
   <meta charset="UTF-8">
   <title>Visitor Pass</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/visitor_pass.css') }}">
+  {% if not pdf_mode %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/visitor_pass.css') }}">
+  {% endif %}
+  {% if pdf_mode %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/visitor_pass_pdf.css') }}">
+{% else %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/visitor_pass.css') }}">
+{% endif %}
+
 </head>
 <body>
   <div class="pass-wrapper">
     <div class="pass-card" id="visitor-pass">
 
-      <!-- Header text in blue color, no box -->
       <h2 style="color: #004080; margin-bottom: 10px;">Visitor Check-in Successful</h2>
 
       <div class="photo">
-        <img src="{{ url_for('static', filename='uploads/' + visitor.photo) }}" alt="Visitor Photo">
+        <img src="{{ url_for('static', filename='uploads/' ~ visitor.photo) }}" alt="Visitor Photo">
       </div>
 
-      <!-- Visitor Details -->
       <div class="details">
         <p><span class="label" style="color: #004080;">Name:</span> <span class="value" style="color: #666;">{{ visitor.name }}</span></p>
         <p><span class="label" style="color: #004080;">Status:</span> <span class="value" style="color: #666;">Approved</span></p>
         <p><span class="label" style="color: #004080;">To Meet:</span> <span class="value" style="color: #666;">{{ visitor.employee.name }}</span></p>
+        <p><span class="label" style="color: #004080;">Purpose:</span> <span class="value" style="color: #666;">{{ visitor.visit_reason }}</span></p>
+      </div>
+
+      <!-- QR Code -->
+      <div class="qrcode">
+        <img src="{{ url_for('static', filename='qrcodes/' ~ visitor.id ~ '.png') }}" 
+             alt="QR Code" style="width:120px; height:120px;">
       </div>
 
       <p class="thank-you" style="color: #004080;">Thank you for visiting Pyrotech!</p>
     </div>
 
-    <!-- Buttons outside the card so they won't be printed -->
+    {% if not pdf_mode %}
+    <!-- Buttons only in web view -->
     <div class="buttons" style="margin-top: 20px; text-align: center;">
-      <button onclick="printPass()">🖨️ Visitor Pass (Print)</button>
-      <a class="btn" href="{{ url_for('visitor_pass_pdf', visitor_id=visitor.id) }}">⬇️Pass (PDF)</a>
+      <button onclick="printPass()">🖨️ Print</button>
+      <a class="btn" href="{{ url_for('visitor_pass_pdf', visitor_id=visitor.id) }}">⬇️ Download PDF</a>
       <a class="btn" href="{{ url_for('welcome') }}">🏠 Back to Home</a>
     </div>
+    {% endif %}
   </div>
 
+  {% if not pdf_mode %}
   <script>
     function printPass() {
       const pass = document.getElementById('visitor-pass').outerHTML;
       const style = `<style>
-        body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; }
         .pass-card { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 350px; margin: auto; padding: 20px; text-align: center; }
         .photo img { width: 100px; height: 120px; object-fit: cover; border-radius: 8px; margin: 10px 0; }
         .details p { margin: 4px 0; font-size: 14px; }
@@ -53,5 +69,6 @@
       win.print();
     }
   </script>
+  {% endif %}
 </body>
 </html>

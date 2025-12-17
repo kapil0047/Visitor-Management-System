@@ -1,218 +1,163 @@
-/* Basic Layout */
+/* === GENERAL RESET === */
 body {
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #f8f9fa;
-    padding: 20px;
-    color: #333;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to right, #002f5d, #5ea6e9);
+  color: #f2f4f8;
+  padding: 30px;
+  margin: 0;
 }
 
-/* Header Layout */
-.admin-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+/* === GLASS CARD CONTAINER === */
+.glass-card {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
 }
 
-/* Buttons */
-.admin-buttons .btn {
-    background-color: #007bff;
-    color: #fff;
-    padding: 8px 12px;
-    margin-left: 10px;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
+/* === TABLE STYLE === */
+.table {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-.admin-buttons .btn:hover {
-    background-color: #0056b3;
+.table thead {
+  background-color: rgba(0, 123, 255, 0.3);
 }
 
-/* Filters */
-.admin-filters {
-    margin-top: 20px;
-    margin-bottom: 10px;
+.table th,
+.table td {
+  padding: 12px 16px;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
 }
 
-.admin-filters input,
-.admin-filters select {
-    padding: 8px;
-    margin-right: 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+/* === BUTTONS === */
+.btn {
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 10px 16px;
+  transition: all 0.3s ease;
 }
 
-/* Table Styling */
-.admin-table table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    table-layout: fixed; /* Keeps column widths consistent */
+.btn-outline-light {
+  background-color: #ffffff;
+  color: #002f5d;
+  border: none;
 }
 
-.admin-table th,
-.admin-table td {
-    border: 1px solid #ccc;
-    padding: 10px;
-    text-align: center;
-    word-wrap: break-word;
+.btn-outline-light:hover {
+  background-color: #4c94d4;
+  color: white;
 }
 
-/* Header Styling */
-.admin-table th {
-    background-color: #007bff;
-    color: white;
+.btn-export {
+  background-color: #28a745;
+  color: white;
 }
 
-/* Wider Action Column */
-.admin-table th.action-column,
-.admin-table td.action-column {
-    width: 170px;
+.btn-export:hover {
+  background-color: #218838;
 }
 
-/* Status Labels */
-.checked-out-label {
-    color: green;
-    font-weight: bold;
+.btn-delete-selected,
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
 }
 
-/* Print-Friendly Styling */
+.btn-delete-selected:hover,
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+/* === FORM INPUTS & SELECTS === */
+input[type="text"],
+select.form-select {
+  background-color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: #002f5d;
+  font-size: 15px;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: inset 1px 1px 5px rgba(0, 0, 0, 0.08);
+}
+
+input::placeholder,
+select option {
+  color: #444;
+  opacity: 0.7;
+}
+
+input:focus,
+select:focus {
+  border-color: #165df5;
+  box-shadow: 0 0 0 2px rgba(22, 93, 245, 0.3);
+}
+
+/* === IMAGE PREVIEW === */
+.img-thumbnail {
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* === BADGES / STATUS === */
+.badge.bg-success {
+  background-color: #28a745 !important;
+  font-size: 0.75rem;
+  padding: 4px 8px;
+}
+
+/* === ACTION BUTTONS IN TABLE === */
+td:last-child .btn {
+  margin: 2px;
+  font-size: 0.8rem;
+  padding: 6px 10px;
+}
+
+/* === PRINT OVERRIDES === */
 @media print {
-    body {
-        background: white;
-        color: black;
-        padding: 0;
-        margin: 0;
-    }
-
-    .admin-header,
-    .admin-buttons,
-    .admin-filters {
-        display: none;
-    }
-
-    .admin-table table {
-        width: 100%;
-        font-size: 12px;
-    }
-
-    .admin-table th,
-    .admin-table td {
-        padding: 6px;
-        border: 1px solid #333;
-    }
-}
-<style>
   body {
-    background: linear-gradient(to right, #002f5d, #5ea6e9);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    background: white;
+    color: black;
+  }
+
+  .no-print,
+  .btn,
+  .action-buttons {
+    display: none !important;
   }
 
   .glass-card {
-    background: rgba(20, 40, 80, 0.4);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 30px;
-    color: #e6f0ff;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    background: transparent !important;
+    box-shadow: none !important;
   }
 
-  .btn {
-    border-radius: 8px;
-    font-weight: 600;
+  .table {
+    border: 1px solid #ccc;
+    font-size: 12px;
+    color: black;
   }
 
-  .btn-outline-light {
-    background-color: #ffffff;
-    color: #002f5d;
-    border: none;
+  th, td {
+    border: 1px solid #ccc;
+    padding: 6px 10px;
+    word-break: break-word;
   }
 
-  .btn-outline-light:hover {
-    background-color: #4c94d4;
-    color: white;
+  img {
+    max-width: 100px;
+    height: auto;
   }
-
-  .btn-export {
-    background-color: #28a745;
-    color: white;
-  }
-
-  .btn-export:hover {
-    background-color: #218838;
-  }
-
-  .btn-delete-selected {
-    background-color: #dc3545;
-    color: white;
-  }
-
-  .card.table-responsive {
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 20px;
-    padding: 20px;
-  }
-</style>
-.action-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 20px;
-    justify-content: flex-start;
-}
-
-.action-buttons a,
-.action-buttons button {
-    background-color: #007bff; /* Primary glassy blue */
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
-    transition: all 0.3s ease;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.action-buttons a:hover,
-.action-buttons button:hover {
-    background-color: #0056b3;
-    box-shadow: 0 4px 12px rgba(0, 86, 179, 0.4);
-}
-.visitor-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(12px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.visitor-table th, .visitor-table td {
-    padding: 12px 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    color: #ffffff;
-}
-
-.visitor-table th {
-    background-color: rgba(0, 123, 255, 0.2);
-    font-weight: bold;
-}
-.action-btn {
-    padding: 8px 12px;
-    margin: 4px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    text-decoration: none;
-    transition: background 0.3s ease;
-}
-
-.action-btn:hover {
-    background-color: #0056b3;
 }
